@@ -7,7 +7,7 @@ def addPost(db, collection, post):
     database = cluster[db]
     coll = database[collection]
     try:
-        coll.insert_many(post)
+        coll.insert_one(post)
         print("Post created.")
     except:
         print("Post failed.")

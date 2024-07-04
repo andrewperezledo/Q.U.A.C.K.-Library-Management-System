@@ -11,8 +11,9 @@ def addManyPost(db, collection, posts):
     coll = database[collection]
     try:
         result = coll.insert_many(posts, ordered=False)
+        print("Posts created.")
     except pymongo.errors.BulkWriteError as e:
-        print(e.details['writeErrors'])
+        print(e.details['writeErrors'][0]['errmsg'])
 
 
 post1 = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
