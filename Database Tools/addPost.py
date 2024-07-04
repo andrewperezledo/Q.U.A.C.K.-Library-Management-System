@@ -1,16 +1,19 @@
 from pymongo import MongoClient
 
-from databasekeys import mongoDBaccess
+from databasekeys import cluster
 
-cluster = MongoClient(mongoDBaccess)
 
-db = cluster["test"]
+def addPost(db, collection, post):
+    database = cluster[db]
+    coll = database[collection]
+    try:
+        coll.insert_many(post)
+        print("Post created.")
+    except:
+        print("Post failed.")
 
-collection = db["test"]
 
-post1 = {"_id":30,"name":"jimmy"}
-post2 = {"_id":22,"name":"bill"}
+post = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
+         "rec_grade": "Middle"}
 
-results = collection.insert_one(post1)
-post_count = collection.count_documents({"_id":23})
-print(post_count)
+addPost("Inventory", "Books", post)
