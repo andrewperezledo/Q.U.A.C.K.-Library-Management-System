@@ -5,6 +5,9 @@ from pymongo import MongoClient
 
 from databasekeys import cluster
 
+# db and collection are the parameters used to get to desired section of database
+# parameter and value filter which posts you will be deleting
+
 
 def deleteManyPost(db, collection, parameter, value):
     database = cluster[db]

@@ -2,6 +2,9 @@ from pymongo import MongoClient
 
 from databasekeys import cluster
 
+# db and collection are the parameters used to get to desired section of database
+# post is the new item you are adding to the database
+# Duplicate _id items fail to add
 
 def addPost(db, collection, post):
     database = cluster[db]
