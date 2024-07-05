@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quack Library</title>
+    <style>
+        .todo {
+            padding: 20px;
+            margin: 10px;
+            background-color: #eee;
+        }
+    </style>
+    <h1 style="text-align:center; color: darkcyan"> Quack Library</h1>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/button_style.css') }}">
+</head>
+<body>
+    <h1>Create New User</h1>
+    <hr>
+    <div class="content">
+    <form method="post">
+        <p>
+            <b><label for="content">User Info</label></b>
+        </p>
+        <p>
+            <input type="text" name="content"
+                placeholder="Username"></input>
+        </p>
+
+        <p>
+            <b><label for="degree">Student Status</label></b>
+        </p>
+        <p>
+            <input id="degree-0" name="degree" required type="radio" value="Important">
+            <label for="degree-0">Yes</label>
+        </p>
+        <p>
+            <input id="degree-1" name="degree" required type="radio" value="Unimportant">
+            <label for="degree-1">No</label>
+        </p>
+        <button type="submit">Submit</button>
+    </form>
+    </div>
+
+
+    <div class="button_container">   
+        <button class="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
+                <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+                    <rect y="5" x="4" width="16" rx="2" height="16">
+                    </rect>
+                    <path d="m8 3v4"></path>
+                    <path d="m16 3v4"></path>
+                    <path d="m4 11h16"></path>
+                </g>
+            </svg>
+            <span class="lable">Add to Calendar</span>
+            </button>
+    </div>
+</body>
+</html>
