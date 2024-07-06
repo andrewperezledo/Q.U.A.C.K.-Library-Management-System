@@ -14,8 +14,8 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
     try:
         result = coll.update_many({search_parameter: search_value},{"$set": {new_parameter: new_value}})
         print("Posts updated.")
-    except pymongo.errors.BulkWriteError as e:
-        print(e.details['writeErrors'][0]['errmsg'])
+    except:
+        print("Update failed.")
 
 
 updateManyPost("Inventory","Books",
