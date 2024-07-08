@@ -15,5 +15,4 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
     except:
         print("Update failed.")
 
-updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone",
-           "genre","Magic")
+# updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
