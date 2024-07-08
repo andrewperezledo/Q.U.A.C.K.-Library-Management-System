@@ -13,11 +13,10 @@ def addPost(db, collection, post):
     coll = database[collection]
     try:
         coll.insert_one(post)
-        print("Post created.")
-    except pymongo.errors.BulkWriteError as e:
-        print(e.details['writeErrors'][0]['errmsg'])
-        return "writeError"
+        return "success"
+    except pymongo.errors.DuplicateKeyError as e:
+        return "Duplicate Key"
     except:
-        print("Post failed.")
+        return "fail"
 
 

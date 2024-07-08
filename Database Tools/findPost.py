@@ -11,10 +11,9 @@ def findPost(db, collection, parameter, value):
     coll = database[collection]
     try:
         results = coll.find_one({parameter: value})
-        print("Search success.")
         return results
     except:
-        print("Search failed.")
+        return "fail"
 
 
 

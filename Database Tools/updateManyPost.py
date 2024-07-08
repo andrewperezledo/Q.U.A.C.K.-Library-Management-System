@@ -18,6 +18,4 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
         print("Update failed.")
 
 
-updateManyPost("Inventory","Books",
-               "rec_grade", "Middle",
-               "genre", "Fantasy")
+updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
