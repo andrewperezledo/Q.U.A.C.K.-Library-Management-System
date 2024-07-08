@@ -8,7 +8,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-/Database Tools/databasekeys.py
+/DatabaseTools/databasekeys.py
 
 # AWS User-specific
 .idea/**/aws.xml
