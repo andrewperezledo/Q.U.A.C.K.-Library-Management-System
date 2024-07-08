@@ -1,3 +1,5 @@
+import pymongo
+from bson.json_util import dumps
 from pymongo import MongoClient
 
 from databasekeys import cluster
@@ -12,11 +14,10 @@ def addPost(db, collection, post):
     try:
         coll.insert_one(post)
         print("Post created.")
+    except pymongo.errors.BulkWriteError as e:
+        print(e.details['writeErrors'][0]['errmsg'])
+        return "writeError"
     except:
         print("Post failed.")
 
 
-post = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
-         "rec_grade": "Middle"}
-
-addPost("Inventory", "Books", post)

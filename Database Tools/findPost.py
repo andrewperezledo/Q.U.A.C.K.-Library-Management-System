@@ -18,4 +18,3 @@ def findPost(db, collection, parameter, value):
 
 
 
-print(findPost("Inventory", "Books", "_id","978-0590353427"))
