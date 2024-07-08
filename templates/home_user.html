@@ -10,19 +10,6 @@
             margin: 10px;
             background-color: #eee;
         }
-        
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    
     </style>
 
 </head>
@@ -30,24 +17,24 @@
     <header>
         <h1 style="text-align:center; color: darkcyan">Quack Library</h1>
     </header>
-    <h2>Welcome!</h2>
+    
     <nav>
         <ul>
-            <li><a href="#profile">Login</a></li>
-            
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#settings">Settings</a></li>
+            <li><a href="#logout">Logout</a></li>
         </ul>
     </nav>
     
     <main>
-        <section id="message">
-            
+        <section id="welcome">
+            <h2>Welcome {{username}}!</h2>
             <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
         </section>
-
     </main>
     
-    <form action= "create-user" method="get">
-        <button type="submit">Create User</button>
-    </form> 
+    <footer>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </footer>
 </body>
 </html>

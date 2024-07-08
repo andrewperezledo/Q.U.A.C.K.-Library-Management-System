@@ -6,24 +6,38 @@ from flask import Flask, render_template, request, url_for, redirect
 
 app = Flask(__name__)
 
-if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
-    app.debug = 1
+
+
 
 @app.route('/', methods=('GET', 'POST'))
 
-def form_buttons_example():
+def homepage():
+
+    return render_template('homepage.html')
+
+
+@app.route('/create-user', methods=('GET', 'POST'))
+
+def create_user():
     if request.method == 'POST':
-        content = request.form['content']
-        degree = request.form['degree']
+        name = request.form.get('content')
+        student = request.form.get('degree')
+        # search if user exists
         # Process the form data (e.g., save to database)
         
         # Redirect to the homepage route
-        return redirect(url_for('homepage'))
-    return render_template('form_and_button.html')
+        
+        return redirect(url_for('home_user', username=name))
+    return render_template('create_user.html')
 
 
+@app.route('/home-user', methods = ('GET', "POST"))
 
-@app.route('/home', methods=('GET', 'POST'))
+def home_user():
+    username = request.args.get('username')
+    return render_template('home_user.html', username = username)
 
-def homepage():
-    return render_template('homepage.html')
+
+if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
+    app.debug = 1
+
