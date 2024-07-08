@@ -3,7 +3,7 @@ from bson.json_util import dumps
 from pymongo import MongoClient
 
 
-from databasekeys import cluster
+from DatabaseTools.databasekeys import cluster
 
 # db and collection are the parameters used to get to desired section of database
 # posts are the new items you are adding to the database
