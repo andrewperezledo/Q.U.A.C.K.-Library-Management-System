@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect
-from DatabaseTools.userCreation import userCreation 
+from DatabaseTools.databasetools import userCreation 
 # to run, export this file with export FLASK_APP=home, export FLASK_DEBUG=1
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
 # templates for the html & js inside html, static for CSS, JavaScript, & images
@@ -23,7 +23,7 @@ def create_user():
         # SEARCH IF USER ALREADY EXISTS!!!!!
 
         # Process the form data (e.g., save to database)
-        userCreation(name, "password123", "member")
+        # userCreation(name, "password123", "member")
         
         # Redirect to the homepage route
         return redirect(url_for('home_user', username=name))
