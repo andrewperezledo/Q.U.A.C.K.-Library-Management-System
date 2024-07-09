@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from databasekeys import encryptionKey
+from DatabaseTools.databasekeys import encryptionKey
 
 # password is the basic text password you want to encrypt
 # it uses the cryptography package

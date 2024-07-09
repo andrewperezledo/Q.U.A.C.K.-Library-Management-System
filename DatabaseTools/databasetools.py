@@ -2,8 +2,8 @@ import pymongo
 from bson.json_util import dumps
 from pymongo import MongoClient
 
-from databasekeys import cluster
-from userencryption import passwordDecrypt, passwordEncrypt
+from DatabaseTools.databasekeys import cluster
+from DatabaseTools.userencryption import passwordDecrypt, passwordEncrypt
 
 
 # db and collection are the parameters used to get to desired section of database
@@ -167,14 +167,6 @@ def userCreation(username, password, usertype):
         return add
 
 
-data = findPost("Userdata", "Users","_id","jimmylynch")
-for items in data:
-    if items == "password":
-        print(passwordDecrypt(data[items]))
-    else:
-        print(data[items])
-
-
 # enter username
 # function returns all user information
 def userSearch(username):
@@ -232,5 +224,12 @@ def loginFunction(username, password):
 # # updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
 
 # print(userCreation("jimmylynch","badpassword","member"))
+
+# data = findPost("Userdata", "Users","_id","jimmylynch")
+# for items in data:
+#     if items == "password":
+#         print(passwordDecrypt(data[items]))
+#     else:
+#         print(data[items])
 
 # userSearch("jimmylynch")
