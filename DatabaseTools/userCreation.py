@@ -1,7 +1,7 @@
-from addPost import addPost
-from findPost import findPost
-from passwordEncryption import passwordEncrypt
-from passwordEncryption import passwordDecrypt
+from DatabaseTools.addPost import addPost
+from DatabaseTools.findPost import findPost
+from DatabaseTools.passwordEncryption import passwordEncrypt
+from DatabaseTools.passwordEncryption import passwordDecrypt
 
 
 
@@ -17,13 +17,3 @@ def userCreation(username, password, usertype):
     else:
         return add
 
-
-print(userCreation("jimmylynch","badpassword","member"))
-
-
-data = findPost("Userdata", "Users","_id","jimmylynch")
-for items in data:
-    if items == "password":
-        print(passwordDecrypt(data[items]))
-    else:
-        print(data[items])

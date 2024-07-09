@@ -7,8 +7,6 @@ from DatabaseTools.userCreation import userCreation
 app = Flask(__name__)
 
 
-
-
 @app.route('/', methods=('GET', 'POST'))
 
 def homepage():
@@ -25,7 +23,7 @@ def create_user():
         # SEARCH IF USER ALREADY EXISTS!!!!!
 
         # Process the form data (e.g., save to database)
-        status = userCreation(name, "password123", "member")
+        userCreation(name, "password123", "member")
         
         # Redirect to the homepage route
         return redirect(url_for('home_user', username=name))

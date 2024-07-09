@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 
-from databasekeys import cluster
+from DatabaseTools.databasekeys import cluster
 
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which posts you are searching for
@@ -21,4 +21,3 @@ def findManyPost(db, collection, parameter, value):
         print("Search failed.")
 
 
-print(findManyPost("Inventory", "Books", "genre", "Fanasy"))

@@ -1,4 +1,4 @@
-from findPost import findPost
+from DatabaseTools.findPost import findPost
 
 
 # enter username
@@ -6,5 +6,3 @@ from findPost import findPost
 def userSearch(username):
     return findPost("Userdata", "Users", "_id", username)
 
-
-userSearch("jimmylynch")

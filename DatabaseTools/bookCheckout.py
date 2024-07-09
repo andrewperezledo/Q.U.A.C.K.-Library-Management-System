@@ -1,7 +1,7 @@
-from findPost import findPost
-from updatePost import updatePost
-from userSearch import userSearch
-from checkBookAvailability import checkBookAvailability
+from DatabaseTools.findPost import findPost
+from DatabaseTools.updatePost import updatePost
+from DatabaseTools.userSearch import userSearch
+from DatabaseTools.checkBookAvailability import checkBookAvailability
 
 # enter title of book to check out, username is the user who is checking out book
 # checks if book exists
@@ -29,8 +29,8 @@ def bookCheckout(title, username):
     return "Book checked out"
 
 
-updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
-updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
+#updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
+#updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
 
 #print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
 

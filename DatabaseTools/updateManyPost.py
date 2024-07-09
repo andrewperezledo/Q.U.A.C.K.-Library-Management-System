@@ -3,7 +3,7 @@ from bson.json_util import dumps
 from pymongo import MongoClient
 
 
-from databasekeys import cluster
+from DatabaseTools.databasekeys import cluster
 
 # db and collection are the parameters used to get to desired section of database
 # search_parameter and search_value filter which posts you will be updating
@@ -18,4 +18,3 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
         print("Update failed.")
 
 
-updateManyPost("Inventory","Books","genre", "Fantasy","available", True)

@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from databasekeys import cluster
+from DatabaseTools.databasekeys import cluster
 
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which post you will be deleting
@@ -14,5 +14,3 @@ def deletePost(db, collection, parameter, value):
     except:
         print("Deletion failed.")
 
-
-deletePost("Inventory", "Books", "_id","978-0590353427")

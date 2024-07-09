@@ -1,5 +1,5 @@
-from findPost import findPost
-from passwordEncryption import passwordDecrypt
+from DatabaseTools.findPost import findPost
+from DatabaseTools.passwordEncryption import passwordDecrypt
 
 
 # enter username and password
@@ -18,4 +18,3 @@ def loginFunction(username, password):
         return "Username or Password is incorrect."
 
 
-print(loginFunction("jimmylynch","badpassword"))
