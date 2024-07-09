@@ -197,40 +197,40 @@ def loginFunction(username, password):
         return "Username or Password is incorrect."
 
 
-if __name__ == "__main__":
-    # testing functions
-    post1 = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
-         "rec_grade": "Middle"}
-    post2 = {"_id": "978-0439064873", "title": "Harry Potter and the Chamber of Secrets", "genre": "Fantasy",
-            "rec_grade": "Middle"}
-    post3 = {"_id": "978-0439136365", "title": "Harry Potter and the Prisoner of Azkaban", "genre": "Fantasy",
-            "rec_grade": "Middle"}
-    post4 = {"_id": "978-0439139601", "title": "Harry Potter and the Goblet of Fire", "genre": "Fantasy",
-            "rec_grade": "Middle"}
-    post5 = {"_id": "978-0439358071", "title": "Harry Potter and the Order of the Phoenix", "genre": "Fantasy",
-            "rec_grade": "Middle"}
 
-    addManyPost("Inventory", "Books", [post1, post2, post3, post4, post5])
+# testing functions
+# post1 = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
+#      "rec_grade": "Middle"}
+# post2 = {"_id": "978-0439064873", "title": "Harry Potter and the Chamber of Secrets", "genre": "Fantasy",
+#         "rec_grade": "Middle"}
+# post3 = {"_id": "978-0439136365", "title": "Harry Potter and the Prisoner of Azkaban", "genre": "Fantasy",
+#         "rec_grade": "Middle"}
+# post4 = {"_id": "978-0439139601", "title": "Harry Potter and the Goblet of Fire", "genre": "Fantasy",
+#         "rec_grade": "Middle"}
+# post5 = {"_id": "978-0439358071", "title": "Harry Potter and the Order of the Phoenix", "genre": "Fantasy",
+#         "rec_grade": "Middle"}
 
-    updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
-    updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
+# addManyPost("Inventory", "Books", [post1, post2, post3, post4, post5])
 
-    # print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
+# updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
+# updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
 
-    checkBookAvailability("Harry Potter and the Order of the Phoenix")
+# # print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
 
-    deleteManyPost("Inventory", "Books", "rec_grade", "Middle")
+# checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
-    deletePost("Inventory", "Books", "_id","978-0590353427")
+# deleteManyPost("Inventory", "Books", "rec_grade", "Middle")
 
-    print(findManyPost("Inventory", "Books", "genre", "Fanasy"))
+# deletePost("Inventory", "Books", "_id","978-0590353427")
 
-    print(loginFunction("jimmylynch","badpassword"))
+# print(findManyPost("Inventory", "Books", "genre", "Fanasy"))
 
-    updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
+# print(loginFunction("jimmylynch","badpassword"))
 
-    # updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
+# updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
 
-    print(userCreation("jimmylynch","badpassword","member"))
-    
-    userSearch("jimmylynch")
+# # updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
+
+# print(userCreation("jimmylynch","badpassword","member"))
+
+# userSearch("jimmylynch")
