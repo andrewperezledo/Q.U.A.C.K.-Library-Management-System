@@ -84,7 +84,6 @@ def checkBookAvailability(title):
     data = findPost("Inventory", "Books", "title", title)
 
     return data["available"]
-
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
@@ -99,7 +98,6 @@ def deleteManyPost(db, collection, parameter, value):
         print("Posts deleted.")
     except:
         print("Deletion failed.")
-
 # Example:
 # deleteManyPost("Inventory", "Books", "rec_grade", "Middle")
 
