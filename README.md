@@ -8,6 +8,6 @@ To put these into the requirements.txt file, enter "pip freeze > requirements.tx
 
 To make things simple, if a package/library is manually installed, edit this README with the command you used, seeing as many are dependencies for a single package installed...
 
-pip install flask
-pip install pymongo
-pip install cryptography
+pip install flask  
+pip install pymongo  
+pip install cryptography  
