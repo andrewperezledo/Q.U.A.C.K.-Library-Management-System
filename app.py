@@ -5,7 +5,7 @@ from DatabaseTools.databasetools import userCreation
 # templates for the html & js inside html, static for CSS, JavaScript, & images
 
 app = Flask(__name__)
-
+app.secret_key = "Ducks"
 
 @app.route('/', methods=('GET', 'POST'))
 
