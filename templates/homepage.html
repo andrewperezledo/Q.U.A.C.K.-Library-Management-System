@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quack Home</title>
+{% extends "base.html" %}
+{% block title %}
+QUACK Home
+{% endblock %}
+
+{% block styles %}
     <style>
         .todo {
             padding: 20px;
             margin: 10px;
-            background-color: #eee;
         }
-        
         button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -22,32 +20,26 @@
         button:hover {
             background-color: #45a049;
         }
-    
     </style>
+{% endblock %}
 
-</head>
-<body style="background-color: rgb(186, 255, 255);">
-    <header>
-        <h1 style="text-align:center; color: darkcyan">Quack Library</h1>
-    </header>
+{% block content %}
     <h2>Welcome!</h2>
     <nav>
         <ul>
             <li><a href="#profile">Login</a></li>
-            
         </ul>
     </nav>
-    
+
     <main>
         <section id="message">
             
             <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
-        </section>
 
+        </section>
     </main>
-    
+
     <form action= "create-user" method="get">
         <button type="submit">Create User</button>
     </form> 
-</body>
-</html>
+{% endblock %}

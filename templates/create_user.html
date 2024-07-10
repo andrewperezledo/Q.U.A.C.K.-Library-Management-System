@@ -1,20 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quack Library</title>
+{% extends "base.html" %}
+{% block title %}
+User Creation
+{% endblock %}
+
+{% block styles %}
     <style>
         .todo {
             padding: 20px;
             margin: 10px;
-            background-color: #eee;
         }
     </style>
-    <h1 style="text-align:center; color: darkcyan"> Quack Library</h1>
+{% endblock %}
+
+{% block link %}
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/button_style.css') }}">
-</head>
-<body  style="background-color: rgb(186, 255, 255)">
+{% endblock %}
+
+{% block content %}
     <h1 style="background-color: darkcyan;">Create New User</h1>
     <hr>
     <div class="content">
@@ -42,7 +44,7 @@
     </form>
     </div>
 
-!All below code from https://uiverse.io/andrew-demchenk0/giant-termite-81 
+    <!-- All below code from https://uiverse.io/andrew-demchenk0/giant-termite-81 -->
     <div class="button_container">   
         <button class="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
@@ -56,6 +58,5 @@
             </svg>
             <span class="lable">Add to Calendar</span>
             </button>
-    </div>
-</body>
-</html>
+    </div> 
+{% endblock %}
