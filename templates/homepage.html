@@ -5,10 +5,6 @@ QUACK Home
 
 {% block styles %}
     <style>
-        .todo {
-            padding: 20px;
-            margin: 10px;
-        }
         button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -24,22 +20,24 @@ QUACK Home
 {% endblock %}
 
 {% block content %}
-    <h2>Welcome!</h2>
-    <nav>
-        <ul>
-            <li><a href="#profile">Login</a></li>
-        </ul>
-    </nav>
+    <div class="container-fluid">
+        <h2>Welcome!</h2>
+        <nav>
+            <ul>
+                <li><a href="#profile">Login</a></li>
+            </ul>
+        </nav>
 
-    <main>
-        <section id="message">
-            
-            <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
+        <main>
+            <section id="message">
+                
+                <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
 
-        </section>
-    </main>
+            </section>
+        </main>
 
-    <form action= "create-user" method="get">
-        <button type="submit">Create User</button>
-    </form> 
+        <form action= "create-user" method="get">
+            <button type="submit">Create User</button>
+        </form>
+    </div>
 {% endblock %}

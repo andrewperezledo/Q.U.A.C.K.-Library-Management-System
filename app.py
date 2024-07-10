@@ -38,7 +38,7 @@ def home_user():
 
 @app.route("/catalog")
 def catalog():
-    return render_template("base.html")
+    return render_template("catalog.html")
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)

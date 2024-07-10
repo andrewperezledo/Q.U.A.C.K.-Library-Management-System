@@ -4,28 +4,23 @@ QUACK Home
 {% endblock %}
 
 {% block styles %}
-    <style>
-        .todo {
-            padding: 20px;
-            margin: 10px;
-            background-color: #eee;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
-    <nav>
-        <ul>
-            <li><a href="#profile">Profile</a></li>
-            <li><a href="#settings">Settings</a></li>
-            <li><a href="#logout">Logout</a></li>
-        </ul>
-    </nav>
+    <div class="container-fluid">
+        <nav>
+            <ul>
+                <li><a href="#profile">Profile</a></li>
+                <li><a href="#settings">Settings</a></li>
+                <li><a href="#logout">Logout</a></li>
+            </ul>
+        </nav>
 
-    <main>
-        <section id="welcome">
-            <h2>Welcome {{username}}!</h2>
-            <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
-        </section>
-    </main> 
+        <main>
+            <section id="welcome">
+                <h2>Welcome {{username}}!</h2>
+                <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
+            </section>
+        </main> 
+    </div>
 {% endblock %}
