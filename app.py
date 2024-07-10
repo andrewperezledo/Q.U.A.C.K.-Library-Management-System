@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect,session
 from DatabaseTools.databasetools import userCreation 
 # to run, export this file with export FLASK_APP=home, export FLASK_DEBUG=1
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
@@ -24,6 +24,7 @@ def create_user():
 
         # Process the form data (e.g., save to database)
         # userCreation(name, "password123", "member")
+        session['username'] = name
         
         # Redirect to the homepage route
         return redirect(url_for('home_user', username=name))
@@ -33,8 +34,11 @@ def create_user():
 @app.route('/home-user', methods = ('GET', "POST"))
 
 def home_user():
-    username = request.args.get('username')
-    return render_template('home_user.html', username = username)
+    if "username" in session:
+        username = request.args.get('username')
+        return render_template('home_user.html', username = username)
+    else:
+        return redirect(url_for('create_user'))
 
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
