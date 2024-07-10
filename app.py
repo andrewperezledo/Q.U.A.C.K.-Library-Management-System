@@ -44,6 +44,7 @@ def home_user():
 @app.route("/logout")
 def logout():
     session.pop('username', None)
+    return redirect(url_for('create_user'))
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.debug = 1
