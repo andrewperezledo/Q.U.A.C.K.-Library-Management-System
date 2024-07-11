@@ -18,17 +18,32 @@ def homepage():
 
 def create_user():
     if request.method == 'POST':
-        name = request.form.get('content')
-        student = request.form.get('degree')
-        # SEARCH IF USER ALREADY EXISTS!!!!!
+        name = request.form.get('content_username')
+        password = request.form.get('content_password')
+        student = request.form.get('content_student')
+        
 
-        # Process the form data (e.g., save to database)
-        # userCreation(name, "password123", "member")
+        # returns something like "matched_user" if already exists, or "failed" or "success"
+        create_status = userCreation(name, password, "member")
         
         # Redirect to the homepage route
         return redirect(url_for('home_user', username=name))
     return render_template('create_user.html')
 
+
+@app.route('/login', methods=('GET', 'POST'))
+
+def login():
+    if request.method == 'POST':
+        name = request.form.get('content_username')
+        password = request.form.get('content_password')
+
+        # CHECK IF USER/PASSWORD EXIST AND ARE CORRECT
+       
+        
+        # Redirect to the user homepage route
+        return redirect(url_for('home_user', username=name))
+    return render_template('login.html')
 
 @app.route('/home-user', methods = ('GET', "POST"))
 
@@ -42,4 +57,3 @@ def catalog():
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
-

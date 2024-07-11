@@ -88,10 +88,20 @@ QUACK Home
 
         <!-- <section class="welcome-section"> -->
         <section class="welcome-section">
-            <h2>Get Started</h2>
-            <div class="auth-buttons">
-                <button id="home_button" onclick="location.href='login'">Login</button>
-                <button id="home_button" onclick="location.href='create-user'">Create User</button>
+            <h2>Login</h2>
+            <div class="login-form">
+                <form method="POST">
+                    <p>
+                        <input type="text" name="content_username"
+                            placeholder="Username"></input>
+                    </p>
+        
+                    <p>
+                        <input type="text" name="content_password"
+                            placeholder="Password"></input>
+                    </p>
+                    <button type="submit">Login</button>
+                </form>
             </div>
         </section>
     </main>

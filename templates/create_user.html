@@ -20,39 +20,27 @@ User Creation
                 <b><label for="content">User Info</label></b>
             </p>
             <p>
-                <input type="text" name="content"
+                <input type="text" name="content_username"
                     placeholder="Username"></input>
             </p>
 
             <p>
-                <b><label for="degree">Student Status</label></b>
+                <input type="text" name="content_password"
+                    placeholder="Password"></input>
             </p>
             <p>
-                <input id="degree-0" name="degree" required type="radio" value="Student">
+                <p>Are you a student?</p>
+                <input id="degree-0" name="content_student" required type="radio" value="Student">
                 <label for="degree-0">Yes</label>
             </p>
             <p>
-                <input id="degree-1" name="degree" required type="radio" value="Non-Student">
+                <input id="degree-1" name="content_student" required type="radio" value="Non-Student">
                 <label for="degree-1">No</label>
             </p>
             <button type="submit">Submit</button>
         </form>
         </div>
 
-        <!-- All below code from https://uiverse.io/andrew-demchenk0/giant-termite-81 -->
-        <div class="button_container">   
-            <button class="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
-                    <g stroke-width="2" stroke-linecap="round" stroke="#fff">
-                        <rect y="5" x="4" width="16" rx="2" height="16">
-                        </rect>
-                        <path d="m8 3v4"></path>
-                        <path d="m16 3v4"></path>
-                        <path d="m4 11h16"></path>
-                    </g>
-                </svg>
-                <span class="lable">Add to Calendar</span>
-                </button>
-        </div>
+        
     </div>
 {% endblock %}
