@@ -16,6 +16,13 @@ User Creation
         <br>
         <div class="content">
         <form method="POST">
+            {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for msg in messages %}
+                            <p>{{msg}}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             <p>
                 <b><label for="content">User Info</label></b>
             </p>
@@ -27,15 +34,6 @@ User Creation
             <p>
                 <input type="text" name="content_password"
                     placeholder="Password"></input>
-            </p>
-            <p>
-                <p>Are you a student?</p>
-                <input id="degree-0" name="content_student" required type="radio" value="Student">
-                <label for="degree-0">Yes</label>
-            </p>
-            <p>
-                <input id="degree-1" name="content_student" required type="radio" value="Non-Student">
-                <label for="degree-1">No</label>
             </p>
             <button type="submit">Submit</button>
         </form>
