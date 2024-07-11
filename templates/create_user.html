@@ -1,61 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quack Library</title>
-    <style>
-        .todo {
-            padding: 20px;
-            margin: 10px;
-            background-color: #eee;
-        }
-    </style>
-    <h1 style="text-align:center; color: darkcyan"> Quack Library</h1>
+{% extends "base.html" %}
+{% block title %}
+User Creation
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/button_style.css') }}">
-</head>
-<body  style="background-color: rgb(186, 255, 255)">
-    <h1 style="background-color: darkcyan;">Create New User</h1>
-    <hr>
-    <div class="content">
-    <form method="POST">
-        <p>
-            <b><label for="content">User Info</label></b>
-        </p>
-        <p>
-            <input type="text" name="content"
-                placeholder="Username"></input>
-        </p>
+{% endblock %}
 
-        <p>
-            <b><label for="degree">Student Status</label></b>
-        </p>
-        <p>
-            <input id="degree-0" name="degree" required type="radio" value="Student">
-            <label for="degree-0">Yes</label>
-        </p>
-        <p>
-            <input id="degree-1" name="degree" required type="radio" value="Non-Student">
-            <label for="degree-1">No</label>
-        </p>
-        <button type="submit">Submit</button>
-    </form>
-    </div>
+{% block content %}
+    <div class="container-fluid">
+        <h1>Create New User</h1>
+        <br>
+        <div class="content">
+        <form method="POST">
+            <p>
+                <b><label for="content">User Info</label></b>
+            </p>
+            <p>
+                <input type="text" name="content"
+                    placeholder="Username"></input>
+            </p>
 
-!All below code from https://uiverse.io/andrew-demchenk0/giant-termite-81 
-    <div class="button_container">   
-        <button class="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
-                <g stroke-width="2" stroke-linecap="round" stroke="#fff">
-                    <rect y="5" x="4" width="16" rx="2" height="16">
-                    </rect>
-                    <path d="m8 3v4"></path>
-                    <path d="m16 3v4"></path>
-                    <path d="m4 11h16"></path>
-                </g>
-            </svg>
-            <span class="lable">Add to Calendar</span>
-            </button>
+            <p>
+                <b><label for="degree">Student Status</label></b>
+            </p>
+            <p>
+                <input id="degree-0" name="degree" required type="radio" value="Student">
+                <label for="degree-0">Yes</label>
+            </p>
+            <p>
+                <input id="degree-1" name="degree" required type="radio" value="Non-Student">
+                <label for="degree-1">No</label>
+            </p>
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+
+        <!-- All below code from https://uiverse.io/andrew-demchenk0/giant-termite-81 -->
+        <div class="button_container">   
+            <button class="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
+                    <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+                        <rect y="5" x="4" width="16" rx="2" height="16">
+                        </rect>
+                        <path d="m8 3v4"></path>
+                        <path d="m16 3v4"></path>
+                        <path d="m4 11h16"></path>
+                    </g>
+                </svg>
+                <span class="lable">Add to Calendar</span>
+                </button>
+        </div>
     </div>
-</body>
-</html>
+{% endblock %}
