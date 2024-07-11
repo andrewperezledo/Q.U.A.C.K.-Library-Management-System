@@ -1,40 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quack Home</title>
-    <style>
-        .todo {
-            padding: 20px;
-            margin: 10px;
-            background-color: #eee;
-        }
-    </style>
+{% extends "base.html" %}
+{% block title %}
+QUACK Home
+{% endblock %}
 
-</head>
-<body style="background-color: rgb(186, 255, 255);">
-    <header>
-        <h1 style="text-align:center; color: darkcyan">Quack Library</h1>
-    </header>
-    
-    <nav>
-        <ul>
-            <li><a href="#profile">Profile</a></li>
-            <li><a href="#settings">Settings</a></li>
-            <li><a href="#logout">Logout</a></li>
-        </ul>
-    </nav>
-    
-    <main>
-        <section id="welcome">
-            <h2>Welcome {{username}}!</h2>
-            <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
-        </section>
-    </main>
-    
-    <footer>
-        <p>&copy; 2024 Your Company. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <nav>
+            <ul>
+                <li><a href="#profile">Profile</a></li>
+                <li><a href="#settings">Settings</a></li>
+                <li><a href="#logout">Logout</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="welcome">
+                <h2>Welcome {{username}}!</h2>
+                <p>We're glad to have you here! Explore the navigation links to view your profile, change settings, or logout.</p>
+            </section>
+        </main> 
+    </div>
+{% endblock %}

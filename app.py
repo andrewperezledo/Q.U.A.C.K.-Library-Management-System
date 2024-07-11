@@ -57,4 +57,3 @@ def catalog():
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
-
