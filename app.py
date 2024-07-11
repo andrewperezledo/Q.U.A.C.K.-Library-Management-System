@@ -40,7 +40,10 @@ def home_user():
     else:
         return redirect(url_for('create_user'))
 
+@app.route("/catalog")
+def catalog():
+    return render_template("catalog.html")
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
-    app.debug = 1
+    app.run(debug=True)
 

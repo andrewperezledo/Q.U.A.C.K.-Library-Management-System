@@ -11,7 +11,7 @@
 
 .button {
     margin-top: 20px;
-    margin-left: 20px;
+    /*margin-left: 20px;*/
     display: flex;
     justify-content: end;
     align-items: end;
