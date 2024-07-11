@@ -36,7 +36,10 @@ def home_user():
     username = request.args.get('username')
     return render_template('home_user.html', username = username)
 
+@app.route("/catalog")
+def catalog():
+    return render_template("catalog.html")
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
-    app.debug = 1
+    app.run(debug=True)
 
