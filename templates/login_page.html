@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}
+User Creation
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/button_style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <h1>Create New User</h1>
+        <br>
+        <div class="content">
+        <form method="POST">
+            <p>
+                <b><label for="content">User Info</label></b>
+            </p>
+            <p>
+                <input type="text" name="username"
+                    placeholder="Username"></input>
+            </p>
+            <p>
+                <input type="text" name="password"
+                    placeholder="Password"></input>
+            </p>
+
+
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+
+    </div>
+{% endblock %}
