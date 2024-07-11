@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-User Creation
+Login Page
 {% endblock %}
 
 {% block styles %}
@@ -11,8 +11,18 @@ User Creation
 {% endblock %}
 
 {% block content %}
+
+
+
     <div class="container-fluid">
-        <h1>Create New User</h1>
+        <h1>Login</h1>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <p>{{msg}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         <br>
         <div class="content">
         <form method="POST">
