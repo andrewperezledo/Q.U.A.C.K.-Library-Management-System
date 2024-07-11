@@ -82,33 +82,14 @@ QUACK Home
 {% block content %}
     <main>
         <section class="welcome-section">
-            <h2>Welcome!</h2>
+            <h2>Welcome Administrator {{username}}!</h2>
             <p>We're thrilled to have you here! Dive into a world of knowledge and imagination. Explore our vast collection, manage your profile, and embark on countless literary adventures.</p>
         </section>
 
         <!-- <section class="welcome-section"> -->
         <section class="welcome-section">
-            <h2>Login</h2>
-            <div class="login-form">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for msg in messages %}
-                            <p>{{msg}}</p>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                <form method="POST">
-                    <p>
-                        <input type="text" name="content_username"
-                            placeholder="Username"></input>
-                    </p>
-        
-                    <p>
-                        <input type="text" name="content_password"
-                            placeholder="Password"></input>
-                    </p>
-                    <button type="submit">Login</button>
-                </form>
+            
+            
             </div>
         </section>
     </main>
