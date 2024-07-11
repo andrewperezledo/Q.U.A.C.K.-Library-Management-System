@@ -1,5 +1,13 @@
-# CEN-Library-Manager
+# Q.U.A.C.K.-Library-Management-System
 Coming Soon
-![image](https://github.com/andrewperezledo/Q.U.A.C.K.-Library-Management-System/assets/104042824/588cb59a-da48-4081-b47f-77017f875d27)
 
-![image](https://github.com/andrewperezledo/Q.U.A.C.K.-Library-Management-System/assets/104042824/bcf393c3-c4fe-451b-9524-ac35329ce9f6)
+requirements.txt describes all packages/libraries needed for compilation.
+It is recommended packages/libraries are installed in a virtual environment for the purpose of consistency across all development platforms.
+To check what is already installed (most desirably inside of virtual environment), enter "pip freeze"
+To put these into the requirements.txt file, enter "pip freeze > requirements.txt"
+
+To make things simple, if a package/library is manually installed, edit this README with the command you used, seeing as many are dependencies for a single package installed...
+
+pip install flask  
+pip install pymongo  
+pip install cryptography  
