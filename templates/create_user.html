@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
 <head">
@@ -59,3 +60,51 @@
     </div>
 </body>
 </html>
+=======
+{% extends "base.html" %}
+{% block title %}
+User Creation
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/button_style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <h1>Create New User</h1>
+        <br>
+        <div class="content">
+        <form method="POST">
+            <p>
+                <b><label for="content">User Info</label></b>
+            </p>
+            <p>
+                <input type="text" name="content_username"
+                    placeholder="Username"></input>
+            </p>
+
+            <p>
+                <input type="text" name="content_password"
+                    placeholder="Password"></input>
+            </p>
+            <p>
+                <p>Are you a student?</p>
+                <input id="degree-0" name="content_student" required type="radio" value="Student">
+                <label for="degree-0">Yes</label>
+            </p>
+            <p>
+                <input id="degree-1" name="content_student" required type="radio" value="Non-Student">
+                <label for="degree-1">No</label>
+            </p>
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+
+        
+    </div>
+{% endblock %}
+>>>>>>> Stashed changes
