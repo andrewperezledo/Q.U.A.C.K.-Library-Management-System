@@ -14,6 +14,8 @@ def homepage():
     return render_template('homepage.html')
 
 
+
+
 @app.route('/create-user', methods=('GET', 'POST'))
 
 def create_user():
@@ -61,25 +63,49 @@ def login():
 
 def home_user():
     username = request.args.get('username')
-    if "username" in session:
-        username = request.args.get('username')
-        if session["usertype"] == "member":
-            return render_template('member.html', username = username)
-        elif session["usertype"] == "employee":
-            return render_template('employee.html', username = username)
-        elif session["usertype"] == "admin":
-            return render_template('admin.html', username = username)
-        #return render_template('home_user.html', username = username)
+    if 'username' in session:
+        usertype = session['usertype']
+        username = session['username']
+        if usertype == 'admin':
+            return render_template('admin.html', username=username)
+        elif usertype == 'employee':
+            return render_template('employee.html', username=username)
+        else:  # member
+            return render_template('member.html', username=username)
     else:
-        return redirect(url_for('homepage'))
+        return render_template('homepage.html')
     
-    return render_template('home_user.html', username = username)
 
 @app.route("/catalog")
 def catalog():
     all_books = getAllBooks()
 
     return render_template("catalog.html", len = len(all_books), books = all_books)
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('usertype', None)
+    return redirect(url_for('homepage'))
+
+@app.route('/admin/manage-employees')
+def manage_employees():
+    if 'usertype' in session and session['usertype'] == 'admin':
+        users = getAllUsers()  # You'll need to create this function in databasetools.py
+        return render_template('manage_employees.html', users=users)
+    else:
+        return redirect(url_for('homepage'))
+
+
+@app.route('/admin/update-user-role', methods=['POST'])
+def update_user_role():
+    if 'usertype' in session and session['usertype'] == 'admin':
+        username = request.form.get('username')
+        new_role = request.form.get('new_role')
+        updateUserRole(username, new_role)
+        return redirect(url_for('manage_employees'))
+    else:
+        return redirect(url_for('homepage'))
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
