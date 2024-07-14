@@ -236,3 +236,12 @@ def getAllBooks():
     for result in results:
         books.append(result)
     return books
+
+def bookSearch(title):
+    database = cluster['Inventory']
+    coll = database['Books']
+    books = []
+    results = coll.find({"title":{"$regex":title}})
+    for result in results:
+        books.append(result)
+    return books
