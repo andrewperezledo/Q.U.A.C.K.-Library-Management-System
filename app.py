@@ -76,7 +76,9 @@ def home_user():
 
 @app.route("/catalog")
 def catalog():
-    return render_template("catalog.html")
+    all_books = getAllBooks()
+
+    return render_template("catalog.html", len = len(all_books), books = all_books)
 
 
 if __name__ == '__main__':  # DEVELOPMENT DEBUG MODE
