@@ -36,7 +36,8 @@ QUACK Catalog
                     Is Available: {{books[i]['availability']}}    
                     </p>
                     <div class="cover">
-                        <img src="{{books[i]['cover_img']}}"  height="210px" width="140px">
+                        <div  z-index: 0 style="text-align: center;">Image Not Available</div>
+                        <img style="position: fixed;" src="{{books[i]['cover_img']}}"  height="210px" width="140px">
                     </div>
                 </div>
             </td>
