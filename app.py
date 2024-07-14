@@ -28,11 +28,11 @@ def create_user():
             session['usertype'] = "member"
         elif create_status == "Matching Username":
             flash("Username already exists", "info")
-            redirect(url_for(create_user))
+            return redirect(url_for('create_user'))
         # Redirect to the homepage route
         else:
             flash("Creation Failed", "info")
-            redirect(url_for(homepage))
+            return redirect(url_for(homepage))
         return redirect(url_for('home_user', username=name))
     return render_template('create_user.html')
 
