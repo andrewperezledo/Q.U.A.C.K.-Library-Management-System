@@ -11,8 +11,10 @@ QUACK Catalog
 
 {% block content %}
 
+<p>{{len}} Total Books:</p>
+
 <table style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
-    <!-- Table headers -->
+    
         <th> 
             <tr style="color: black; ">     
             <td>Title</td> 
@@ -20,33 +22,21 @@ QUACK Catalog
     </tr> 
         </th> 
     {%for i in range(0, len)%}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/>
-    <style type="text/css"> 
-      
-        th:tr{ 
-            color: aquamarine; 
-      
-        } 
-        tr:nth-of-type(2n){ 
-            border: 1px solid black; 
-            background-color: rgba(150, 150, 150, 0.5); 
-      
-        } 
-      
-        td{ 
-            padding: 8px 8px; 
-            border: 1px solid black; 
-        } 
-    </style> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/> 
     
     <div class = book-table>
         <tr> 
-            <td>{{books[i]["name"]}}</td> 
+            <td>{{books[i]["title"]}}</td> 
             <td>
                 <div class="book">
-                    <p>Hello</p>
+                    <p style="text-align: center;">ISBN: {{books[i]['_id']}}<br>
+                    Author: {{books[i]['author']}}<br>
+                    Year: {{books[i]['release_year']}}<br>
+                    Publisher: {{books[i]['publisher']}}<br>
+                    Is Available: {{books[i]['availability']}}    
+                    </p>
                     <div class="cover">
-                        <img src="{{books[i]['image']}}"  height="300px" width="220px">
+                        <img src="{{books[i]['cover_img']}}"  height="210px" width="140px">
                     </div>
                 </div>
             </td>

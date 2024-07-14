@@ -77,12 +77,9 @@ def home_user():
 
 @app.route("/catalog")
 def catalog():
-    book1 = {"image": "https://d3525k1ryd2155.cloudfront.net/f/070/174/9788418174070.RH.0.l.jpg",
-             "name": "Harry Potter"}
-    book2 = {"image": "https://m.media-amazon.com/images/I/91Jra1QAMPL._AC_UF1000,1000_QL80_.jpg",
-             "name": "Maze Runner"}
+    all_books = getAllBooks()
 
-    return render_template("catalog.html", len = 2, books = [book1, book2])
+    return render_template("catalog.html", len = len(all_books), books = all_books)
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
