@@ -227,7 +227,6 @@ def loginFunction(username, password):
 # Example:
 # print(loginFunction("jimmylynch","badpassword"))
 
-
 def getAllBooks():
     database = cluster['Inventory']
     coll = database['Books']
@@ -245,3 +244,17 @@ def bookSearch(title):
     for result in results:
         books.append(result)
     return books
+
+def getAllUsers():
+    database = cluster['Userdata']
+    coll = database['Users']
+    users = list(coll.find({}, {'_id': 1, 'usertype': 1}))
+    return [{'username': user['_id'], 'usertype': user['usertype']} for user in users]
+
+def updateUserRole(username, new_role):
+    database = cluster['Userdata']
+    coll = database['Users']
+    result = coll.update_one({'_id': username}, {'$set': {'usertype': new_role}})
+    return result.modified_count > 0
+    
+
