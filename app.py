@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from DatabaseTools.databasetools import *
+from datetime import datetime
 
 # to run, export this file with export FLASK_APP=home, export FLASK_DEBUG=1
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
@@ -92,8 +93,7 @@ def manage_employees():
         users = getAllUsers()  # You'll need to create this function in databasetools.py
         return render_template('manage_employees.html', users=users)
     else:
-        return redirect(url_for('homepage'))
-
+        return redirect(url_for('homepage')
 
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():
@@ -104,6 +104,15 @@ def update_user_role():
         return redirect(url_for('manage_employees'))
     else:
         return redirect(url_for('homepage'))
+
+@app.route("/events")
+def events():
+    all_books = getAllBooks()
+
+    return render_template("events.html")
+
+# Add "/events/register" route. Blueprint? Probably not worth it
+# if not logged in, redirect to login, then back to register page
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
