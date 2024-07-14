@@ -226,3 +226,13 @@ def loginFunction(username, password):
         return "Username or Password is incorrect."
 # Example:
 # print(loginFunction("jimmylynch","badpassword"))
+
+
+def getAllBooks():
+    database = cluster['Inventory']
+    coll = database['Books']
+    books = []
+    results = coll.find({})
+    for result in results:
+        books.append(result)
+    return books
