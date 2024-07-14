@@ -80,6 +80,11 @@ def catalog():
 
     return render_template("catalog.html", len = len(all_books), books = all_books)
 
+@app.route("/events")
+def events():
+
+    return render_template("events.html")
+
 
 if __name__ == '__main__':  # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
