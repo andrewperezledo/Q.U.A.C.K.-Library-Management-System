@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from DatabaseTools.databasetools import *
+
 # to run, export this file with export FLASK_APP=home, export FLASK_DEBUG=1
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
 # templates for the html & js inside html, static for CSS, JavaScript, & images
@@ -7,24 +8,22 @@ from DatabaseTools.databasetools import *
 app = Flask(__name__)
 app.secret_key = "Ducks"
 
+
 @app.route('/', methods=('GET', 'POST'))
-
 def homepage():
-
     return render_template('homepage.html')
 
 
 
 
 @app.route('/create-user', methods=('GET', 'POST'))
-
 def create_user():
     if request.method == 'POST':
         name = request.form.get('content_username')
         password = request.form.get('content_password')
         # returns something like "matched_user" if already exists, or "failed" or "success"
         create_status = userCreation(name, password, "member")
-        
+
         if create_status == "success":
             session['username'] = name
             session['usertype'] = "member"
@@ -40,7 +39,6 @@ def create_user():
 
 
 @app.route('/login', methods=('GET', 'POST'))
-
 def login():
     if request.method == 'POST':
         name = request.form.get('content_username')
@@ -56,11 +54,11 @@ def login():
         else:
             flash("Invalid username or password", "info")
             return redirect(url_for('login'))
-        
+
     return render_template('login.html')
 
-@app.route('/home-user', methods = ('GET', "POST"))
 
+@app.route('/home-user', methods=('GET', "POST"))
 def home_user():
     username = request.args.get('username')
     if 'username' in session:

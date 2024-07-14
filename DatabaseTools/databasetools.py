@@ -226,6 +226,7 @@ def loginFunction(username, password):
         return "Username or Password is incorrect."
 # Example:
 # print(loginFunction("jimmylynch","badpassword"))
+
 def getAllBooks():
     database = cluster['Inventory']
     coll = database['Books']
@@ -255,3 +256,5 @@ def updateUserRole(username, new_role):
     coll = database['Users']
     result = coll.update_one({'_id': username}, {'$set': {'usertype': new_role}})
     return result.modified_count > 0
+    
+
