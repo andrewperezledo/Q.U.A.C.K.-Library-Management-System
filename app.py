@@ -12,7 +12,19 @@ app.secret_key = "Ducks"
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
-    return render_template('homepage.html')
+    username = request.args.get('username')
+    if 'username' in session:
+        usertype = session['usertype']
+        username = session['username']
+        if usertype == 'admin':
+            return render_template('admin.html', username=username)
+        elif usertype == 'employee':
+            return render_template('employee.html', username=username)
+        else:  # member
+            return render_template('member.html', username=username)
+    else:
+        return render_template('homepage.html')
+    # return render_template('homepage.html')
 
 
 
@@ -35,7 +47,7 @@ def create_user():
         else:
             flash("Creation Failed", "info")
             return redirect(url_for(homepage))
-        return redirect(url_for('home_user', username=name))
+        return redirect(url_for('homepage', username=name))
     return render_template('create_user.html')
 
 
@@ -51,7 +63,7 @@ def login():
             userdata = userSearch(name)
             session['username'] = name
             session['usertype'] = userdata["usertype"]  # Admin, employee, or member
-            return redirect(url_for('home_user', username=name))
+            return redirect(url_for('homepage'))
         else:
             flash("Invalid username or password", "info")
             return redirect(url_for('login'))
@@ -59,20 +71,20 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/home-user', methods=('GET', "POST"))
-def home_user():
-    username = request.args.get('username')
-    if 'username' in session:
-        usertype = session['usertype']
-        username = session['username']
-        if usertype == 'admin':
-            return render_template('admin.html', username=username)
-        elif usertype == 'employee':
-            return render_template('employee.html', username=username)
-        else:  # member
-            return render_template('member.html', username=username)
-    else:
-        return render_template('homepage.html')
+# @app.route('/home-user', methods=('GET', "POST"))
+# def home_user():
+#     username = request.args.get('username')
+#     if 'username' in session:
+#         usertype = session['usertype']
+#         username = session['username']
+#         if usertype == 'admin':
+#             return render_template('admin.html', username=username)
+#         elif usertype == 'employee':
+#             return render_template('employee.html', username=username)
+#         else:  # member
+#             return render_template('member.html', username=username)
+#     else:
+#         return render_template('homepage.html')
     
 
 @app.route("/catalog")
@@ -93,7 +105,7 @@ def manage_employees():
         users = getAllUsers()  # You'll need to create this function in databasetools.py
         return render_template('manage_employees.html', users=users)
     else:
-        return redirect(url_for('homepage')
+        return redirect(url_for('homepage'))
 
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():
