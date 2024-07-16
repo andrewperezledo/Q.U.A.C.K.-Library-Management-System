@@ -4,79 +4,10 @@ QUACK Home
 {% endblock %}
 
 {% block styles %}
-<style>
-    body {
-        display: flex;
-    }
-    main {
-        max-width: 1000px;
-        width: 90%;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
+{% endblock %}
 
-    h1 {
-        color: #2c3e50;
-        font-size: 2.5em;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        color: #34495e;
-        margin-bottom: 20px;
-    }
-
-    p {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 30px;
-    }
-
-    .welcome-section {
-        flex: 1;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        margin-right: 20px;
-    }
-
-    .auth-section {
-        flex: 1;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 3px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .auth-buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #home_button {
-        padding: 12px 24px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 10px 0;
-        width: 200px;
-    }
-
-    #home_button:hover {
-        background-color: #2980b9;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    }
-</style>
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
 {% endblock %}
 
 {% block content %}
@@ -107,7 +38,7 @@ QUACK Home
                         <input type="text" name="content_password"
                             placeholder="Password"></input>
                     </p>
-                    <button type="submit">Login</button>
+                    <button id="home_button" type="submit">Login</button>
                 </form>
             </div>
         </section>

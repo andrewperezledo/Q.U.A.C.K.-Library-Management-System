@@ -23,6 +23,10 @@
         {% endblock %}
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css')}}"/>
+
+        <!-- For Scripts -->
+        {% block scripts %}
+        {% endblock %}
     </head>
 
     <body id="nav_body">
@@ -35,7 +39,7 @@
                     <div class="logo-container">
                         <img src="{{ url_for('static', filename='images/duck.png')}}" alt="Duck Logo" class="logo">
                     </div>
-                    <a class="navbar-brand" href="/home-user">QUACK Library System</a>
+                    <a class="navbar-brand" href="/">QUACK Library System</a>
                     <!-- <button
                         data-mdb-collapse-init
                         class="navbar-toggler"
@@ -50,7 +54,7 @@
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/home-user">Home</a>
+                            <a class="nav-link active" aria-current="page" href="/">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="/catalog">Catalog</a>

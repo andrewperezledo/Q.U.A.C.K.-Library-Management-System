@@ -4,11 +4,27 @@ QUACK Events
 {% endblock %}
 
 <!-- Library Hours: 8:00am - 8:00pm -->
-<!-- Event Blocks: 1 per hour; 12 per day -->
+<!-- Event Blocks: 1 per hour (1 hour after opening and before closing); 10 per day -->
 <!-- Can plan 30 days in adavance -->
 
 {% block styles %}
 <style>
+    /* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap'); */
+    /* *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    } */
+    /* body{
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    justify-content: center;
+    min-height: 100vh;
+    background: #9B59B6;
+    } */
+    
     body {
         display: flex;
     }
@@ -83,24 +99,50 @@ QUACK Events
 </style>
 {% endblock %}
 
+{% block link %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calender.css')}}"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='scripts/calender.js') }}" defer></script>
+{% endblock %}
+
 {% block content %}
 <main>
+    <div class="wrapper">
+        <header>
+        <p class="current-date"></p>
+        <div class="icons">
+            <span id="prev" class="material-symbols-rounded">chevron_left</span>
+            <span id="next" class="material-symbols-rounded">chevron_right</span>
+        </div>
+        </header>
+        <div class="calendar">
+        <ul class="weeks">
+            <li>Sun</li>
+            <li>Mon</li>
+            <li>Tue</li>
+            <li>Wed</li>
+            <li>Thu</li>
+            <li>Fri</li>
+            <li>Sat</li>
+        </ul>
+        <ul class="days"></ul>
+        </div>
+    </div>
+
     <section class="welcome-section">
-        <h2>Welcome!</h2>
-        <p>We're thrilled to have you here! Dive into a world of knowledge and imagination. Explore our vast collection, manage your profile, and embark on countless literary adventures.</p>
+        <h2>Events for DATE</h2>
+        <!-- If open: contact front desk about scheduling event or call 123-456-7890 -->
+        <p>{{ events }}</p>
     </section>
 
     <section class="welcome-section">
-        <h2>Get Started</h2>
+        <h2>SPecific for some reason super long Event Title</h2>
         <div class="auth-buttons">
             <button id="home_button" onclick="location.href='login'">Login</button>
             <button id="home_button" onclick="location.href='create-user'">Create User</button>
-        </div>
-    </section>
-
-    <section class="welcome-section">
-        <h2>Skylar white yo</h2>
-        <div class="auth-buttons">
         </div>
     </section>
     

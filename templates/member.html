@@ -1,21 +1,64 @@
 {% extends "base.html" %}
 {% block title %} QUACK Member Dashboard {% endblock %}
+
 {% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/member.css')}}"/>
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/> -->
+<style>
+    .options-section {
+        flex: 1;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        padding: 3px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .options-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #logout_button {
+    padding: 12px 24px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    width: 200px;
+    }
+
+    #logout_button:hover {
+        background-color: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
 {% endblock %}
 
 {% block content %}
-<div class="member-container">
-    <div class="member-dashboard">
-        <div class="welcome-message">
-            <h2>Welcome, {{username}}!</h2>
-            <p>Explore our library resources and upcoming events.</p>
+<main>
+    <section class="welcome-section">
+        <h2>Welcome, {{username}}!</h2>
+        <p>We're thrilled to have you here! Dive into a world of knowledge and imagination. Explore our vast collection, manage your profile, and embark on countless literary adventures.</p>
+    </section>
+
+    <section class="welcome-section">
+        <h2>Explore our Services!</h2>
+        <div class="options-buttons">
+            <button id="home_button" onclick="location.href='catalog'">Browse Catalog</button>
+            <button id="home_button" onclick="location.href='events'">View Events</button>
+            <button id="logout_button" onclick="location.href='logout'">Logout</button>
         </div>
-        <div class="member-buttons">
-            <a href="/catalog" class="member-button">Browse Catalog</a>
-            <a href="#"  class="member-button">View Events</a>
-            <a href="/logout"  class="member-button logout-button">Logout</a>
-        </div>
-    </div>
-</div>
+    </section>
+</main>
 {% endblock %}
