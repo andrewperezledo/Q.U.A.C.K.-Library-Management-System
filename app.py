@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from DatabaseTools.databasetools import *
+from datetime import datetime
 
 # to run, export this file with export FLASK_APP=home, export FLASK_DEBUG=1
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
@@ -11,7 +12,19 @@ app.secret_key = "Ducks"
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
-    return render_template('homepage.html')
+    username = request.args.get('username')
+    if 'username' in session:
+        usertype = session['usertype']
+        username = session['username']
+        if usertype == 'admin':
+            return render_template('admin.html', username=username)
+        elif usertype == 'employee':
+            return render_template('employee.html', username=username)
+        else:  # member
+            return render_template('member.html', username=username)
+    else:
+        return render_template('homepage.html')
+    # return render_template('homepage.html')
 
 
 
@@ -34,7 +47,7 @@ def create_user():
         else:
             flash("Creation Failed", "info")
             return redirect(url_for(homepage))
-        return redirect(url_for('home_user', username=name))
+        return redirect(url_for('homepage', username=name))
     return render_template('create_user.html')
 
 
@@ -50,7 +63,7 @@ def login():
             userdata = userSearch(name)
             session['username'] = name
             session['usertype'] = userdata["usertype"]  # Admin, employee, or member
-            return redirect(url_for('home_user', username=name))
+            return redirect(url_for('homepage'))
         else:
             flash("Invalid username or password", "info")
             return redirect(url_for('login'))
@@ -58,20 +71,20 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/home-user', methods=('GET', "POST"))
-def home_user():
-    username = request.args.get('username')
-    if 'username' in session:
-        usertype = session['usertype']
-        username = session['username']
-        if usertype == 'admin':
-            return render_template('admin.html', username=username)
-        elif usertype == 'employee':
-            return render_template('employee.html', username=username)
-        else:  # member
-            return render_template('member.html', username=username)
-    else:
-        return render_template('homepage.html')
+# @app.route('/home-user', methods=('GET', "POST"))
+# def home_user():
+#     username = request.args.get('username')
+#     if 'username' in session:
+#         usertype = session['usertype']
+#         username = session['username']
+#         if usertype == 'admin':
+#             return render_template('admin.html', username=username)
+#         elif usertype == 'employee':
+#             return render_template('employee.html', username=username)
+#         else:  # member
+#             return render_template('member.html', username=username)
+#     else:
+#         return render_template('homepage.html')
     
 
 @app.route("/catalog")
@@ -94,7 +107,6 @@ def manage_employees():
     else:
         return redirect(url_for('homepage'))
 
-
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():
     if 'usertype' in session and session['usertype'] == 'admin':
@@ -104,6 +116,15 @@ def update_user_role():
         return redirect(url_for('manage_employees'))
     else:
         return redirect(url_for('homepage'))
+
+@app.route("/events", methods=['GET', 'POST'])
+def events():
+    # eventCreation(datetime.today().strftime('%Y-%m-%d') + "-01", "Birthday day!", "My birthday today! Call this number to RSVP!", "123-456-7890")
+    events = getEventsByDate(datetime.today().strftime('%Y-%m-%d'))
+    return render_template("events.html", events=events)
+
+# Add "/events/register" route. Blueprint? Probably not worth it
+# if not logged in, redirect to login, then back to register page
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
