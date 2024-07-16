@@ -117,11 +117,11 @@ def update_user_role():
     else:
         return redirect(url_for('homepage'))
 
-@app.route("/events")
+@app.route("/events", methods=['GET', 'POST'])
 def events():
-    all_books = getAllBooks()
-
-    return render_template("events.html")
+    # eventCreation(datetime.today().strftime('%Y-%m-%d') + "-01", "Birthday day!", "My birthday today! Call this number to RSVP!", "123-456-7890")
+    events = getEventsByDate(datetime.today().strftime('%Y-%m-%d'))
+    return render_template("events.html", events=events)
 
 # Add "/events/register" route. Blueprint? Probably not worth it
 # if not logged in, redirect to login, then back to register page
