@@ -10,4 +10,47 @@ QUACK Catalog
 {% endblock %}
 
 {% block content %}
+
+<p>{{len}} Total Books:</p>
+
+<table style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
+    
+        <th> 
+            <tr style="color: black; ">     
+            <td>Title</td> 
+            <td>Info</td> 
+    </tr> 
+        </th> 
+    {%for i in range(0, len)%}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/> 
+    
+    <div class = book-table>
+        <tr> 
+            <td>{{books[i]["title"]}}</td> 
+            <td>
+                <div class="book">
+                    <p style="text-align: center;">ISBN: {{books[i]['_id']}}<br>
+                    Author: {{books[i]['author']}}<br>
+                    Year: {{books[i]['release_year']}}<br>
+                    Publisher: {{books[i]['publisher']}}<br>
+                    Is Available: {{books[i]['availability']}}    
+                    </p>
+                    <div class="cover">
+                        <div  z-index: 0 style="text-align: center;">Image Not Available</div>
+                        <img style="position: fixed;" src="{{books[i]['cover_img']}}"  height="210px" width="140px">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <button>Checkout</button>
+            </td> 
+        </tr> 
+          
+        
+        
+            
+    </div>     
+    {%endfor%}
+</table> 
+<p></p>
 {% endblock %}

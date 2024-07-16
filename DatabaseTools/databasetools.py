@@ -227,7 +227,6 @@ def loginFunction(username, password):
 # Example:
 # print(loginFunction("jimmylynch","badpassword"))
 
-
 def getAllBooks():
     database = cluster['Inventory']
     coll = database['Books']
@@ -245,3 +244,40 @@ def bookSearch(title):
     for result in results:
         books.append(result)
     return books
+
+def getAllUsers():
+    database = cluster['Userdata']
+    coll = database['Users']
+    users = list(coll.find({}, {'_id': 1, 'usertype': 1}))
+    return [{'username': user['_id'], 'usertype': user['usertype']} for user in users]
+
+def updateUserRole(username, new_role):
+    database = cluster['Userdata']
+    coll = database['Users']
+    result = coll.update_one({'_id': username}, {'$set': {'usertype': new_role}})
+    return result.modified_count > 0
+    
+# Remove status? Perhaps check time and change status only when event is loaded in?
+# When is yyyy-mm-dd-pp, where pp is a period 01-10.
+def eventCreation(when, title, desc, contact = '', approved=False, status = "upcoming"):
+    post = {"_id": when, "approved": approved, "status":status, "title": title, "desc": desc, "contact": contact}
+    add = addPost("Events", "Events", post)
+    if add == "Duplicate Key":
+        return "Time Slot Taken"
+    else:
+        return add
+    
+# Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
+# Date in format yyyy-mm-dd
+def getEventsByDate(day):
+    # database = cluster["Events"]
+    # coll = database["Events"]
+
+    users = []
+    # Iterates through events of specified date
+    for i in range(1, 11):
+        post = findPost("Events", "Events", "_id", day + f"-{i:02d}")
+        if post and post != "fail":
+            users.append(post)
+
+    return users

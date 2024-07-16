@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %} QUACK Manage Employees {% endblock %}
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/manage-employee.css')}}"/>
+{% endblock %}
+
+{% block content %}
+<div class="manage-employees-container">
+    <h2>Manage Employees</h2>
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Current Role</th>
+                <th>Change Role</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.usertype }}</td>
+                <td>
+                    <form action="{{ url_for('update_user_role') }}" method="POST">
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                        <select name="new_role" class="role-select">
+                            <option value="member" {% if user.usertype == 'member' %}selected{% endif %}>Member</option>
+                            <option value="employee" {% if user.usertype == 'employee' %}selected{% endif %}>Employee</option>
+                            <option value="admin" {% if user.usertype == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                </td>
+                <td>
+                        <button type="submit" class="update-button">Update Role</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
