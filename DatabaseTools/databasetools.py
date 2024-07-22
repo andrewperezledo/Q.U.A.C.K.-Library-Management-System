@@ -270,14 +270,11 @@ def eventCreation(when, title, desc, contact = '', approved=False, status = "upc
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
 def getEventsByDate(day):
-    # database = cluster["Events"]
-    # coll = database["Events"]
-
-    users = []
+    events = []
     # Iterates through events of specified date
     for i in range(1, 11):
         post = findPost("Events", "Events", "_id", day + f"-{i:02d}")
         if post and post != "fail":
-            users.append(post)
+            events.append(post)
 
-    return users
+    return events
