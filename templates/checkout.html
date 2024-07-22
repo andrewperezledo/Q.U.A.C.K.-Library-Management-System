@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}
+QUACK Catalog
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/checkout.css')}}"/> 
+
+
+    <section class="title">
+        <h2>Checking Out "{{book['title']}}"</h2>
+    </section>
+<div class = "checkout-container">
+    <div class="book" style="margin-top: 50px; margin-left: 500px;">
+        <p style="text-align: center;">ISBN: {{book['_id']}}<br>
+        Author: {{book['author']}}<br>
+        Year: {{book['release_year']}}<br>
+        Publisher: {{book['publisher']}}<br>
+        Is Available: {{book['availability']}}    
+        </p>
+        <div class="cover">
+            <div  z-index: 0 style="text-align: center;">Image Not Available</div>
+            <img style="position: fixed;" src="{{book['cover_img']}}"  height="300px" width="230px">
+        </div>
+    </div>
+
+    <section class="checkout">
+        <h3>Are you sure you want to checkout "{{book['title']}}"?</h2>
+            <div class=checkout-buttons>
+                <form action="/check" method="POST">
+                    <input type="hidden" name="isbn" value="{{book['_id']}}">
+                    <button type="submit">Checkout</button>
+                </form>
+                <!--  ><button onclick="location.href='check'">Checkout</button>-->
+                <button onclick="history.back()">Cancel</button>
+                {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                                {% for msg in messages %}
+                                    <p>{{msg}}</p>
+                                {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+            </div>
+            
+    </section>
+</div>
+
+
+
+
+{% endblock %}

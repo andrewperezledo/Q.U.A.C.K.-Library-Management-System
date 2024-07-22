@@ -13,6 +13,15 @@ QUACK Catalog
 
 <p>{{len}} Total Books:</p>
 
+<div style=" text-align: center; color:crimson;">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+</div>
 <table style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
     
         <th> 
@@ -41,8 +50,12 @@ QUACK Catalog
                     </div>
                 </div>
             </td>
+           
             <td>
-                <button>Checkout</button>
+                <form action="/checkout" method="POST">
+                    <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                    <button id="home_button" type="submit">Checkout</button>
+                </form>
             </td> 
         </tr> 
           

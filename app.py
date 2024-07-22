@@ -87,11 +87,47 @@ def login():
 #         return render_template('homepage.html')
     
 
-@app.route("/catalog")
+# IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
+@app.route("/catalog", methods=('GET', 'POST'))
 def catalog():
     all_books = getAllBooks()
-
     return render_template("catalog.html", len = len(all_books), books = all_books)
+
+
+@app.route("/checkout", methods=('GET', 'POST'))
+def checkout():
+    if 'username' in session:
+        # This is all in POST method
+        book_isbn = str(request.form.get('isbn'))
+        books = ISBNSearch(book_isbn)
+        book = books[0]
+        return render_template('checkout.html', book = book)
+    else:
+         flash('You must be logged in to checkout.', 'info')
+         return redirect(url_for('catalog'))
+
+# this function actually checks out the book as user is logged in
+@app.route("/check", methods=('GET', 'POST'))
+def check():
+    if request.method == "POST":
+        isbn = request.form['isbn']
+
+    username = session['username']
+
+    status = bookCheckout(isbn, username)
+
+    if status == "Book unavailable":
+        flash("Book is unavailable.", "info")
+
+    elif status == "Book does not exist":
+        flash("Book does not exist.", "info")
+
+    else:
+        flash("Item successfully checked out.", "info")
+
+    return redirect(url_for('catalog'))
+       
+    
 
 @app.route('/logout')
 def logout():

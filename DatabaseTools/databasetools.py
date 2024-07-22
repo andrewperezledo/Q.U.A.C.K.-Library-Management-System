@@ -50,28 +50,35 @@ def addPost(db, collection, post):
         return "fail"
 
 
-# enter title of book to check out, username is the user who is checking out book
+# enter isbn of book to check out, username is the user who is checking out book
 # checks if book exists
 # does not have user permission validation, so at this point any user can do this
-def bookCheckout(title, username):
+def bookCheckout(isbn, username):
 
-    if not checkBookAvailability(title):
+    if not checkBookAvailability(isbn):
         return "Book unavailable"
 
-    data = findPost("Inventory", "Books", "title", title)
+    data = findPost("Inventory", "Books", "_id", isbn)
     if data is None:
-        return "Title does not exist"
+        return "Book does not exist"
 
     # Sets book to unavailable in inventory system
-    updatePost("Inventory", "Books", "title", title, "available", False)
+    updatePost("Inventory", "Books", "_id", isbn, "availability", False)
     # Adds book to users profile
     user = userSearch(username)
-    if len(user["inventory"]) == 0:
-        updatePost("Userdata", "Users", "_id", username, "inventory", [data])
-    else:
-        inv = user["inventory"]
-        inv.append(data)
-        updatePost("Userdata", "Users", "_id", username, "inventory", inv)
+
+    try:
+        if len(user["books"]) == 0:
+            updatePost("Userdata", "Users", "_id", username, "books", [data])
+        else:
+            books = user["books"]
+            books.append(data)
+            updatePost("Userdata", "Users", "_id", username, "books", books)
+    except:
+        #TODO
+        # make book inventory array
+        # add books field for user 
+        updatePost("Userdata", "Users", "_id", username, "books", [data])
 
     return "Book checked out"
 # Example:
@@ -79,11 +86,11 @@ def bookCheckout(title, username):
 
 
 # function is designed to check item availability by title
-def checkBookAvailability(title):
+def checkBookAvailability(isbn):
 
-    data = findPost("Inventory", "Books", "title", title)
+    data = findPost("Inventory", "Books", "_id", isbn)
 
-    return data["available"]
+    return data["availability"]
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
@@ -278,3 +285,12 @@ def getEventsByDate(day):
             events.append(post)
 
     return events
+
+def ISBNSearch(isbn):
+    database = cluster['Inventory']
+    coll = database['Books']
+    books = []
+    results = coll.find({"_id":{"$regex":isbn}})
+    for result in results:
+        books.append(result)
+    return books
