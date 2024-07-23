@@ -11,7 +11,7 @@ currMonth = date.getMonth(),
 currDate = date.getDate(),
 selectedYear = currYear,
 selectedMonth = currMonth,
-selectedDay = date.getDate();
+selectedDate = date.getDate();
 
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July",
@@ -33,7 +33,7 @@ const renderCalendar = () => {
             tempMonth = 11;
         }
 
-        if ((lastDateofLastMonth - i + 1) === selectedDay && selectedMonth === tempMonth && selectedYear === tempYear) {
+        if ((lastDateofLastMonth - i + 1) === selectedDate && selectedMonth === tempMonth && selectedYear === tempYear) {
             liTag += `<li id="${lastDateofLastMonth - i + 1}" class="active" onclick="dayClicked('active', '${lastDateofLastMonth - i + 1}')">${lastDateofLastMonth - i + 1}</li>`;
         }
         else
@@ -50,7 +50,7 @@ const renderCalendar = () => {
             && currYear === new Date().getFullYear()) {
             today = true;
         }
-        if (i === selectedDay && currMonth === selectedMonth && currYear === selectedYear) {
+        if (i === selectedDate && currMonth === selectedMonth && currYear === selectedYear) {
             selected = true;
         }
 
@@ -74,7 +74,7 @@ const renderCalendar = () => {
             tempMonth = 0;
         }
 
-        if ((i - lastDayofMonth + 1) === selectedDay && selectedMonth === tempMonth && selectedYear === tempYear)
+        if ((i - lastDayofMonth + 1) === selectedDate && selectedMonth === tempMonth && selectedYear === tempYear)
             liTag += `<li id="${i - lastDayofMonth + 1}" class="active" onclick="dayClicked('active', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
         else
             liTag += `<li id="${i - lastDayofMonth + 1}" class="inactive" onclick="dayClicked('inactive', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
@@ -134,7 +134,6 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
 //         renderCalendar(); // calling renderCalendar function
 //     });
 // });
-dayClicked('', '');
 
 function dayClicked(day_class, day_id) {
     if (day_class == "inactive")
@@ -169,7 +168,8 @@ function dayClicked(day_class, day_id) {
         selectedMonth = 0;
     }
 
-    selectedDay = Number(day_id); 
+    selectedDate = Number(day_id); 
 
     renderCalendar(); // calling renderCalendar function
 }
+dayClicked('', selectedDate);
