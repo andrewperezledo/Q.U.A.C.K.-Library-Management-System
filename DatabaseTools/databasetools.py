@@ -252,6 +252,17 @@ def bookSearch(title):
         books.append(result)
     return books
 
+# This is the same as book search, except you can fill choose what category to search
+# and value is the search key you are looking for
+def generalSearch(category,value):
+    database = cluster['Inventory']
+    coll = database['Books']
+    books = []
+    results = coll.find({category: {"$regex": value}})
+    for result in results:
+        books.append(result)
+    return books
+
 def getAllUsers():
     database = cluster['Userdata']
     coll = database['Users']
