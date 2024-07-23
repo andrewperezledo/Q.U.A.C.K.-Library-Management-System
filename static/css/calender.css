@@ -2,9 +2,11 @@
 
 .wrapper{
 width: 450px;
-background: rgba(255, 255, 255, 0.6);
+background-color: rgba(255, 255, 255, 0.8);
 border-radius: 10px;
 box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+margin-right: 10px;
+margin-left: 10px;
 }
 .wrapper header{
 display: flex;
@@ -34,7 +36,7 @@ header .icons span:hover{
 background: #f2f2f2;
 }
 header .current-date{
-font-size: 1.45rem;
+font-size: 1.65rem;
 font-weight: 500;
 }
 .calendar{

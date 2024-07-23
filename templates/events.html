@@ -8,98 +8,11 @@ QUACK Events
 <!-- Can plan 30 days in adavance -->
 
 {% block styles %}
-<style>
-    /* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap'); */
-    /* *{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    } */
-    /* body{
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    justify-content: center;
-    min-height: 100vh;
-    background: #9B59B6;
-    } */
-    
-    body {
-        display: flex;
-    }
-    main {
-        max-width: 1000px;
-        width: 90%;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
 
-    h1 {
-        color: #2c3e50;
-        font-size: 2.5em;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        color: #34495e;
-        margin-bottom: 20px;
-    }
-
-    p {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 30px;
-    }
-
-    .welcome-section {
-        flex: 1;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        margin-right: 20px;
-    }
-
-    .auth-section {
-        flex: 1;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 3px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .auth-buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #home_button {
-        padding: 12px 24px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 10px 0;
-        width: 200px;
-    }
-
-    #home_button:hover {
-        background-color: #2980b9;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    }
-</style>
 {% endblock %}
 
 {% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/calender.css')}}"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 {% endblock %}
@@ -135,7 +48,11 @@ QUACK Events
     <section class="welcome-section">
         <h2>Events for DATE</h2>
         <!-- If open: contact front desk about scheduling event or call 123-456-7890 -->
-        <p>{{ events }}</p>
+        <p>{{ events }}
+
+
+
+        </p>
     </section>
 
     <section class="welcome-section">
