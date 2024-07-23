@@ -199,6 +199,8 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
 # password is password, will get encrypted
 # usertype should be either member, employee, or admin and will be used to enable account features
 def userCreation(username, password, usertype):
+    if username == '' or password == '':
+        return "Please enter valid username or password."
     post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
@@ -308,3 +310,5 @@ def ISBNSearch(isbn):
     for result in results:
         books.append(result)
     return books
+
+
