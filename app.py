@@ -44,6 +44,9 @@ def create_user():
         elif create_status == "Matching Username":
             flash("Username already exists", "info")
             return redirect(url_for('create_user'))
+        elif create_status == "Please enter valid username or password.":
+            flash("Please enter valid username or password.", "info")
+            return redirect(url_for('create_user'))
         # Redirect to the homepage route
         else:
             flash("Creation Failed", "info")
