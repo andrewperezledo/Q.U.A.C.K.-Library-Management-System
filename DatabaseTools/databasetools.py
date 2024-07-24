@@ -93,6 +93,35 @@ def bookCheckout(isbn, username):
 # print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
 
 
+# isbn for book to return, username of who is making return
+# returns can be soon for each possible case
+# "Book returned" indicates success
+# Sets book availability to True, due_date to none, and removes book from user inventory
+def bookReturn(isbn, username):
+    if checkBookAvailability(isbn):
+        return "Book already in-stock"
+
+    data = findPost("Inventory", "Books", "_id", isbn)
+    if data is None:
+        return "Book does not exist"
+
+    updatePost("Inventory", "Books", "_id", isbn, "availability", True)
+    updatePost("Inventory", "Books", "_id", isbn, "due_date", "none")
+
+    # Remove book from user profile
+    user = userSearch(username)
+    new_inventory = user["books"]
+    count = 0
+    for book in new_inventory:
+        if book["_id"] == isbn:
+            new_inventory.pop(count)
+            break
+        count += 1
+    updatePost("Userdata", "Users", "_id", username, "books", new_inventory)
+
+    return "Book returned"
+
+
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
     data = findPost("Inventory", "Books", "_id", isbn)
