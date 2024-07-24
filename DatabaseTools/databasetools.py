@@ -248,9 +248,17 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
 # username is the username, must be unique
 # password is password, will get encrypted
 # usertype should be either member, employee, or admin and will be used to enable account features
+# Password can't have anything listed in banned characters list.
 def userCreation(username, password, usertype):
+    banned_characters = ["/", ";", "'", '"', "{", "}", "[", "]", "(", ")", ":"]
     if username == '' or password == '':
         return "Please enter valid username or password."
+    for character in password:
+        if character in banned_characters:
+            return "Please enter valid username or password."
+    for character in username:
+        if character in banned_characters:
+            return "Please enter valid username or password."
     post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
