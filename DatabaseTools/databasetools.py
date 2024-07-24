@@ -1,7 +1,7 @@
 import pymongo
 from bson.json_util import dumps
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from DatabaseTools.databasekeys import cluster
 from DatabaseTools.userencryption import passwordDecrypt, passwordEncrypt
 
@@ -67,13 +67,8 @@ def bookCheckout(isbn, username):
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
     data["availability"] = False
-    today = datetime.today().strftime('%Y-%m-%d')
-    num = today[-2:]
-    num = int(num) + 3
-    if num < 10:
-        due = today[0:-2] + "0" + str(num)
-    else:
-        due = today[0:-2] + str(num)
+    present = datetime.today()
+    due = present + timedelta(days=3)
     updatePost("Inventory", "Books", "_id", isbn, "due_date", due)
     data["due_date"] = due
     # Adds book to users profile
@@ -379,3 +374,19 @@ def ISBNSearch(isbn):
     for result in results:
         books.append(result)
     return books
+
+# Returns given username's books
+def getUserInventory(username):
+    user = findPost("Userdata","Users","_id",username)
+    return user["books"]
+
+
+def checkUserOverdue(username):
+    user = findPost("Userdata","Users","_id",username)
+    present = datetime.today()
+    overdue_books = []
+    for book in user["books"]:
+        if book["due_date"] < present:
+            overdue_books.append(book)
+    return overdue_books
+
