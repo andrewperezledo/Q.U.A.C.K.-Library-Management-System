@@ -1,7 +1,7 @@
 import pymongo
 from bson.json_util import dumps
 from pymongo import MongoClient
-
+from datetime import datetime
 from DatabaseTools.databasekeys import cluster
 from DatabaseTools.userencryption import passwordDecrypt, passwordEncrypt
 
@@ -17,6 +17,8 @@ def addManyPost(db, collection, posts):
         print("Posts created.")
     except pymongo.errors.BulkWriteError as e:
         print(e.details['writeErrors'][0]['errmsg'])
+
+
 # Example:
 # post1 = {"_id": "978-0590353427", "title": "Harry Potter and the Sorcerer's Stone", "genre": "Fantasy",
 #      "rec_grade": "Middle"}
@@ -52,9 +54,9 @@ def addPost(db, collection, post):
 
 # enter isbn of book to check out, username is the user who is checking out book
 # checks if book exists
-# does not have user permission validation, so at this point any user can do this
+# Updates book in the inventory so that it says unavailable and stores the due date in the inventory page
+# as well as inside the users inventory
 def bookCheckout(isbn, username):
-
     if not checkBookAvailability(isbn):
         return "Book unavailable"
 
@@ -62,35 +64,42 @@ def bookCheckout(isbn, username):
     if data is None:
         return "Book does not exist"
 
-    # Sets book to unavailable in inventory system
+    # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
+    data["availability"] = False
+    today = datetime.today().strftime('%Y-%m-%d')
+    num = today[-2:]
+    num = int(num) + 3
+    if num < 10:
+        due = today[0:-2] + "0" + str(num)
+    else:
+        due = today[0:-2] + str(num)
+    updatePost("Inventory", "Books", "_id", isbn, "due_date", due)
+    data["due_date"] = due
     # Adds book to users profile
     user = userSearch(username)
 
-    try:
-        if len(user["books"]) == 0:
-            updatePost("Userdata", "Users", "_id", username, "books", [data])
-        else:
-            books = user["books"]
-            books.append(data)
-            updatePost("Userdata", "Users", "_id", username, "books", books)
-    except:
-        #TODO
-        # make book inventory array
-        # add books field for user 
+    if len(user['books']) == 0:
         updatePost("Userdata", "Users", "_id", username, "books", [data])
+    else:
+        books = user["books"]
+        books.append(data)
+        updatePost("Userdata", "Users", "_id", username, "books", books)
 
     return "Book checked out"
+
+
 # Example:
 # print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
 
 
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
-
     data = findPost("Inventory", "Books", "_id", isbn)
 
     return data["availability"]
+
+
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
@@ -105,6 +114,8 @@ def deleteManyPost(db, collection, parameter, value):
         print("Posts deleted.")
     except:
         print("Deletion failed.")
+
+
 # Example:
 # deleteManyPost("Inventory", "Books", "rec_grade", "Middle")
 
@@ -119,6 +130,8 @@ def deletePost(db, collection, parameter, value):
         print("Post deleted.")
     except:
         print("Deletion failed.")
+
+
 # Example:
 # deletePost("Inventory", "Books", "_id","978-0590353427")
 
@@ -138,6 +151,8 @@ def findManyPost(db, collection, parameter, value):
         return data
     except:
         print("Search failed.")
+
+
 # Example:
 # print(findManyPost("Inventory", "Books", "genre", "Fanasy"))
 
@@ -153,6 +168,8 @@ def findPost(db, collection, parameter, value):
         return results
     except:
         return "fail"
+
+
 # Example:
 # data = findPost("Userdata", "Users","_id","jimmylynch")
 # for items in data:
@@ -169,10 +186,12 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
     database = cluster[db]
     coll = database[collection]
     try:
-        result = coll.update_many({search_parameter: search_value},{"$set": {new_parameter: new_value}})
+        result = coll.update_many({search_parameter: search_value}, {"$set": {new_parameter: new_value}})
         print("Posts updated.")
     except:
         print("Update failed.")
+
+
 # Example:
 # updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
 
@@ -185,10 +204,12 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
     database = cluster[db]
     coll = database[collection]
     try:
-        coll.update_one({search_parameter: search_value}, {"$set":{new_parameter: new_value}})
+        coll.update_one({search_parameter: search_value}, {"$set": {new_parameter: new_value}})
         print("Post updated.")
     except:
         print("Update failed.")
+
+
 # Example:
 # updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
 # updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
@@ -201,20 +222,23 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
 def userCreation(username, password, usertype):
     if username == '' or password == '':
         return "Please enter valid username or password."
-    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype}
+    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
         return "Matching Username"
     else:
         return add
+
+
 # Example:
 # print(userCreation("jimmylynch","badpassword","member"))
-
 
 # enter username
 # function returns all user information
 def userSearch(username):
     return findPost("Userdata", "Users", "_id", username)
+
+
 # Example:
 # userSearch("jimmylynch")
 
@@ -223,7 +247,6 @@ def userSearch(username):
 # function decrypts password and checks if user exists
 # returns either login successful or message stating incorrect parameters
 def loginFunction(username, password):
-
     results = findPost("Userdata", "Users", "_id", username)
     if results is None:
         return "Username or Password is incorrect."
@@ -233,6 +256,8 @@ def loginFunction(username, password):
         return "Login Successful."
     else:
         return "Username or Password is incorrect."
+
+
 # Example:
 # print(loginFunction("jimmylynch","badpassword"))
 
@@ -245,25 +270,28 @@ def getAllBooks():
         books.append(result)
     return books
 
+
 def bookSearch(title):
     database = cluster['Inventory']
     coll = database['Books']
     books = []
-    results = coll.find({"title":{"$regex":title}})
+    results = coll.find({"title": {"$regex": title}})
     for result in results:
         books.append(result)
     return books
 
+
 # This is the same as book search, except you can fill choose what category to search
 # and value is the search key you are looking for
-def generalSearch(category,value):
+def generalSearch(category, value, type):
     database = cluster['Inventory']
-    coll = database['Books']
+    coll = database[type]
     books = []
     results = coll.find({category: {"$regex": value}})
     for result in results:
         books.append(result)
     return books
+
 
 def getAllUsers():
     database = cluster['Userdata']
@@ -271,22 +299,25 @@ def getAllUsers():
     users = list(coll.find({}, {'_id': 1, 'usertype': 1}))
     return [{'username': user['_id'], 'usertype': user['usertype']} for user in users]
 
+
 def updateUserRole(username, new_role):
     database = cluster['Userdata']
     coll = database['Users']
     result = coll.update_one({'_id': username}, {'$set': {'usertype': new_role}})
     return result.modified_count > 0
-    
+
+
 # Remove status? Perhaps check time and change status only when event is loaded in?
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
-def eventCreation(when, title, desc, contact = '', approved=False, status = "upcoming"):
-    post = {"_id": when, "approved": approved, "status":status, "title": title, "desc": desc, "contact": contact}
+def eventCreation(when, title, desc, contact='', approved=False, status="upcoming"):
+    post = {"_id": when, "approved": approved, "status": status, "title": title, "desc": desc, "contact": contact}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
     else:
         return add
-    
+
+
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
 def getEventsByDate(day):
@@ -302,13 +333,12 @@ def getEventsByDate(day):
 
     return users
 
+
 def ISBNSearch(isbn):
     database = cluster['Inventory']
     coll = database['Books']
     books = []
-    results = coll.find({"_id":{"$regex":isbn}})
+    results = coll.find({"_id": {"$regex": isbn}})
     for result in results:
         books.append(result)
     return books
-
-
