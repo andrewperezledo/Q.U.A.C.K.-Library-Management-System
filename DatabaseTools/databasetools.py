@@ -57,12 +57,12 @@ def addPost(db, collection, post):
 # Updates book in the inventory so that it says unavailable and stores the due date in the inventory page
 # as well as inside the users inventory
 def bookCheckout(isbn, username):
-    if not checkBookAvailability(isbn):
-        return "Book unavailable"
 
     data = findPost("Inventory", "Books", "_id", isbn)
     if data is None:
         return "Book does not exist"
+    if not data["availability"]:
+        return "Book unavailable"
 
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
@@ -83,6 +83,32 @@ def bookCheckout(isbn, username):
 
     return "Book checked out"
 
+def movieCheckout(title, username):
+    data = findPost("Inventory", "Movies", "title", title)
+    if data is None:
+        return "Movie does not exist"
+    if not data["availability"]:
+        "Movie unavailable"
+
+    # Sets movie to unavailable in inventory system and assigns due date (3 days from day of checkout)
+    updatePost("Inventory", "Movies", "title", title, "availability", False)
+    data["availability"] = False
+    present = datetime.today()
+    due = present + timedelta(days=3)
+    updatePost("Inventory", "Movies", "title", title, "due_date", due)
+    data["due_date"] = due
+    # Adds movie to users profile
+    user = userSearch(username)
+
+    if len(user['movies']) == 0:
+        updatePost("Userdata", "Users", "_id", username, "movies", [data])
+    else:
+        movies = user["movies"]
+        movies.append(data)
+        updatePost("Userdata", "Users", "_id", username, "movies", movies)
+
+    return "Movie checked out"
+
 
 # Example:
 # print(bookCheckout("Harry Potter and the Sorcerer's Stone", "jimmylynch"))
@@ -93,12 +119,13 @@ def bookCheckout(isbn, username):
 # "Book returned" indicates success
 # Sets book availability to True, due_date to none, and removes book from user inventory
 def bookReturn(isbn, username):
-    if checkBookAvailability(isbn):
-        return "Book already in-stock"
 
     data = findPost("Inventory", "Books", "_id", isbn)
     if data is None:
         return "Book does not exist"
+
+    if data["availability"]:
+        return "Book already in-stock"
 
     updatePost("Inventory", "Books", "_id", isbn, "availability", True)
     updatePost("Inventory", "Books", "_id", isbn, "due_date", "none")
@@ -116,6 +143,30 @@ def bookReturn(isbn, username):
 
     return "Book returned"
 
+
+def movieReturn(title, username):
+    data = findPost("Inventory", "Movies", "title", title)
+    if data is None:
+        return "Movie does not exist"
+
+    if data["availability"]:
+        return "Movie already in-stock"
+
+    updatePost("Inventory", "Movies", "title", title, "availability", True)
+    updatePost("Inventory", "Movies", "title", title, "due_date", "none")
+
+    # Remove book from user profile
+    user = userSearch(username)
+    new_inventory = user["movies"]
+    count = 0
+    for movie in new_inventory:
+        if movie["title"] == title:
+            new_inventory.pop(count)
+            break
+        count += 1
+    updatePost("Userdata", "Users", "_id", username, "movies", new_inventory)
+
+    return "Movie returned"
 
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
