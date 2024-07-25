@@ -13,6 +13,41 @@ QUACK Catalog
 
 <p>{{len}} Total Books:</p>
 
+<!-- FIXME searchbar -->
+ <div class="searchbar" style="display: flex; justify-content: center;">
+    <form class="d-flex input-group w-auto", method="post" style=" margin-bottom: 10px;">
+                       
+        <!-- Potential to make look better :) -->
+        <select name="medium" id="medium">
+            <option value="Books">Books</option>
+            <option value="Movies">Movies</option>
+        </select>
+
+        <select name="parameter" id="parameter">
+            <option value="title">Title</option>
+            <option value="_id">ISBN</option>
+            <option value="genre">Genre</option>
+            <option value="author">Author</option>
+            <option value="release_year">Year</option>
+            <option value="publisher">Publisher</option>
+            
+        </select>
+    
+        <input 
+        name="search-text"
+        id="search-text"
+        type="search"
+        class="form-control rounded"
+        placeholder="Search"
+        aria-label="Search"
+        aria-describedby="search-addon"
+         style="width: 600px;"/>
+       
+        </span>
+    </form>
+ </div>
+
+
 <div style=" text-align: center; color:crimson;">
 {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -41,6 +76,7 @@ QUACK Catalog
                     <p style="text-align: center;">ISBN: {{books[i]['_id']}}<br>
                     Author: {{books[i]['author']}}<br>
                     Year: {{books[i]['release_year']}}<br>
+                    Genre: {{books[i]['genre']}}<br>
                     Publisher: {{books[i]['publisher']}}<br>
                     Is Available: {{books[i]['availability']}}    
                     </p>
@@ -54,6 +90,7 @@ QUACK Catalog
             <td>
                 <form action="/checkout" method="POST">
                     <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                    <input type="hidden" name="medium" value="Books">
                     <button id="home_button" type="submit">Checkout</button>
                 </form>
             </td> 

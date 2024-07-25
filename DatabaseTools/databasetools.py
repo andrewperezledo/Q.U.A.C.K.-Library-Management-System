@@ -417,9 +417,9 @@ def getEventsByDate(day):
     return users
 
 
-def ISBNSearch(isbn):
+def ISBNSearch(isbn, collection):
     database = cluster['Inventory']
-    coll = database['Books']
+    coll = database[collection]
     books = []
     results = coll.find({"_id": {"$regex": isbn}})
     for result in results:

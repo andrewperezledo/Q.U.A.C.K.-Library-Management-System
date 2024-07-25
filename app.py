@@ -94,6 +94,23 @@ def login():
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
 @app.route("/catalog", methods=('GET', 'POST'))
 def catalog():
+    if request.method == "POST":
+        searched_items = []
+        medium = request.form["medium"]
+        parameter = request.form["parameter"]
+        search_text = request.form["search-text"]
+
+        if medium == "Movies" and parameter not in ["title", "release_year", "genre"]:
+            flash("You can only search movies by Title or Year.", "info")
+            return redirect(url_for('catalog'))
+        
+        flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
+        searched_items = generalSearch(parameter, search_text, medium)
+        if len(searched_items) == 0:
+            flash("Your search did not match any items.", "info")
+            redirect(url_for('catalog'))
+        return render_template("catalog.html", len = len(searched_items), books = searched_items)
+    
     all_books = getAllBooks()
     return render_template("catalog.html", len = len(all_books), books = all_books)
 
@@ -102,10 +119,15 @@ def catalog():
 def checkout():
     if 'username' in session:
         # This is all in POST method
-        book_isbn = str(request.form.get('isbn'))
-        books = ISBNSearch(book_isbn)
+        # TODO
+        # need to find how to get if item is book or movie
+        #------FIX ME!!!! I DONT WORK FOR CHECKING OUT MOVIES (should switch to general search)-----
+        item_isbn = str(request.form.get('isbn'))
+        item_collection = str(request.form.get('medium'))
+        books = ISBNSearch(item_isbn, item_collection)
         book = books[0]
         return render_template('checkout.html', book = book)
+    
     else:
          flash('You must be logged in to checkout.', 'info')
          return redirect(url_for('catalog'))
