@@ -83,19 +83,19 @@ def bookCheckout(isbn, username):
 
     return "Book checked out"
 
-def movieCheckout(title, username):
-    data = findPost("Inventory", "Movies", "title", title)
+def movieCheckout(id_number, username):
+    data = findPost("Inventory", "Movies", "_id", id_number)
     if data is None:
         return "Movie does not exist"
     if not data["availability"]:
-        "Movie unavailable"
+        return "Movie unavailable"
 
     # Sets movie to unavailable in inventory system and assigns due date (3 days from day of checkout)
-    updatePost("Inventory", "Movies", "title", title, "availability", False)
+    updatePost("Inventory", "Movies", "_id", id_number, "availability", False)
     data["availability"] = False
     present = datetime.today()
     due = present + timedelta(days=3)
-    updatePost("Inventory", "Movies", "title", title, "due_date", due)
+    updatePost("Inventory", "Movies", "_id", id_number, "due_date", due)
     data["due_date"] = due
     # Adds movie to users profile
     user = userSearch(username)
@@ -417,11 +417,11 @@ def getEventsByDate(day):
     return users
 
 
-def ISBNSearch(isbn):
+def ISBNSearch(isbn, collection):
     database = cluster['Inventory']
-    coll = database['Books']
+    coll = database[collection]
     books = []
-    results = coll.find({"_id": {"$regex": isbn}})
+    results = coll.find({"_id":isbn})
     for result in results:
         books.append(result)
     return books
