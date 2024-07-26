@@ -119,13 +119,20 @@ def catalog():
 def checkout():
     if 'username' in session:
         # This is all in POST method
-        # TODO
-        # need to find how to get if item is book or movie
-        #------FIX ME!!!! I DONT WORK FOR CHECKING OUT MOVIES (should switch to general search)-----
-        item_isbn = str(request.form.get('isbn'))
-        item_collection = str(request.form.get('medium'))
-        books = ISBNSearch(item_isbn, item_collection)
-        book = books[0]
+        # books have string ISBNs movies have INTEGER IDs
+        item_collection = str(request.form.get('type'))
+        if item_collection == "Books":
+            item_isbn = str(request.form.get('isbn'))
+            print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
+            books = ISBNSearch(item_isbn, item_collection)
+            book = books[0]
+        else: 
+            item_isbn = int(request.form.get('isbn'))
+            print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
+            books = ISBNSearch(item_isbn, item_collection)
+            book = books[0]
+        
+        
         return render_template('checkout.html', book = book)
     
     else:
@@ -137,19 +144,17 @@ def checkout():
 def check():
     if request.method == "POST":
         isbn = request.form['isbn']
+        collection = request.form['type']
+        print(f"isbn: {isbn}, collection: {collection} **************")
 
     username = session['username']
-
-    status = bookCheckout(isbn, username)
-
-    if status == "Book unavailable":
-        flash("Book is unavailable.", "info")
-
-    elif status == "Book does not exist":
-        flash("Book does not exist.", "info")
-
-    else:
-        flash("Item successfully checked out.", "info")
+    if collection == "Books":
+        status = bookCheckout(isbn, username)
+        flash(status, "info")
+        
+    elif collection == "Movies":
+        status = movieCheckout(int(isbn), username)
+        flash(status, "info")
 
     return redirect(url_for('catalog'))
        

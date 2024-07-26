@@ -86,11 +86,15 @@ QUACK Catalog
                     </div>
                 </div>
             </td>
-           
             <td>
+                {% if books[i]['author']:%}
+                    {% set medium = "Books"%}
+                {% else %}
+                    {% set medium = "Movies" %}       
+                {% endif %}
                 <form action="/checkout" method="POST">
                     <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
-                    <input type="hidden" name="medium" value="Books">
+                    <input type="hidden" name="type" value="{{medium}}">
                     <button id="home_button" type="submit">Checkout</button>
                 </form>
             </td> 
