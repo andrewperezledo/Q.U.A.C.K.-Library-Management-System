@@ -35,10 +35,11 @@ QUACK Catalog
             <div class=checkout-buttons>
                 <form action="/check" method="POST">
                     <input type="hidden" name="isbn" value="{{book['_id']}}">
+                    <input type="hidden" name="type" value="{{request.form['type']}}">
                     <button type="submit">Checkout</button>
                 </form>
                 <!--  ><button onclick="location.href='check'">Checkout</button>-->
-                <button onclick="history.back()">Cancel</button>
+                <button onclick="location.href='/catalog'">Cancel</button>
                 {% with messages = get_flashed_messages() %}
                         {% if messages %}
                                 {% for msg in messages %}
