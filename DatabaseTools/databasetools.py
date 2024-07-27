@@ -63,6 +63,9 @@ def bookCheckout(isbn, username):
         return "Book does not exist"
     if not data["availability"]:
         return "Book unavailable"
+    overdue_status = checkUserOverdue(username)
+    if len(overdue_status) != 0:
+        return "User has overdue books."
 
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
@@ -436,8 +439,12 @@ def checkUserOverdue(username):
     user = findPost("Userdata","Users","_id",username)
     present = datetime.today()
     overdue_books = []
+
     for book in user["books"]:
         if book["due_date"] < present:
             overdue_books.append(book)
     return overdue_books
+
+
+
 
