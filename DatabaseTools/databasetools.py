@@ -64,7 +64,7 @@ def bookCheckout(isbn, username):
         return "Book unavailable"
     overdue_status = checkUserOverdue(username)
     if len(overdue_status) != 0:
-        return "User has overdue books."
+        return "User has overdue items."
 
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
@@ -92,7 +92,9 @@ def movieCheckout(id_number, username):
         return "Movie does not exist"
     if not data["availability"]:
         return "Movie unavailable"
-
+    overdue_status = checkUserOverdue(username)
+    if len(overdue_status) != 0:
+        return "User has overdue items."
     # Sets movie to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Movies", "_id", id_number, "availability", False)
     data["availability"] = False
