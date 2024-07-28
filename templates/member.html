@@ -51,6 +51,30 @@
         <h2>Welcome, {{username}}!</h2>
         <p>We're thrilled to have you here! Dive into a world of knowledge and imagination. Explore our vast collection, manage your profile, and embark on countless literary adventures.</p>
     </section>
+    <section class="welcome-section">
+        <h2>Your inventory!</h2>
+        {% if booklength != 0 or movielength != 0 %}
+            {% if booklength != 0 %}
+                <h5>Books</h5>
+                {% for i in range(0,booklength) %}
+                   <p>{{inventory[0][i]["title"]}}<br>
+                       Due: {{inventory[0][i]["due_date"].date()}}
+                   </p>
+                {% endfor %}
+            {% endif %}
+            {% if movielength != 0 %}
+                <h5>Movies</h5>
+                {% for i in range(0,movielength) %}
+                   <p>{{inventory[1][i]["title"]}}<br>
+                       Due: {{inventory[0][1]["due_date"].date()}}
+                   </p>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>Nothing to see here.<br>
+            Go look at the catalog to see what we have available for checkout.</p>
+        {% endif %}
+    </section>
 
     <section class="welcome-section">
         <h2>Explore our Services!</h2>

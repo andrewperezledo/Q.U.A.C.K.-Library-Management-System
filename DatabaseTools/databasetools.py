@@ -57,7 +57,6 @@ def addPost(db, collection, post):
 # Updates book in the inventory so that it says unavailable and stores the due date in the inventory page
 # as well as inside the users inventory
 def bookCheckout(isbn, username):
-
     data = findPost("Inventory", "Books", "_id", isbn)
     if data is None:
         return "Book does not exist"
@@ -65,7 +64,7 @@ def bookCheckout(isbn, username):
         return "Book unavailable"
     overdue_status = checkUserOverdue(username)
     if len(overdue_status) != 0:
-        return "User has overdue books."
+        return "User has overdue items."
 
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Books", "_id", isbn, "availability", False)
@@ -86,13 +85,16 @@ def bookCheckout(isbn, username):
 
     return "Book checked out"
 
+
 def movieCheckout(id_number, username):
     data = findPost("Inventory", "Movies", "_id", id_number)
     if data is None:
         return "Movie does not exist"
     if not data["availability"]:
         return "Movie unavailable"
-
+    overdue_status = checkUserOverdue(username)
+    if len(overdue_status) != 0:
+        return "User has overdue items."
     # Sets movie to unavailable in inventory system and assigns due date (3 days from day of checkout)
     updatePost("Inventory", "Movies", "_id", id_number, "availability", False)
     data["availability"] = False
@@ -122,7 +124,6 @@ def movieCheckout(id_number, username):
 # "Book returned" indicates success
 # Sets book availability to True, due_date to none, and removes book from user inventory
 def bookReturn(isbn, username):
-
     data = findPost("Inventory", "Books", "_id", isbn)
     if data is None:
         return "Book does not exist"
@@ -170,6 +171,7 @@ def movieReturn(title, username):
     updatePost("Userdata", "Users", "_id", username, "movies", new_inventory)
 
     return "Movie returned"
+
 
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
@@ -424,27 +426,28 @@ def ISBNSearch(isbn, collection):
     database = cluster['Inventory']
     coll = database[collection]
     books = []
-    results = coll.find({"_id":isbn})
+    results = coll.find({"_id": isbn})
     for result in results:
         books.append(result)
     return books
 
+
 # Returns given username's books
 def getUserInventory(username):
-    user = findPost("Userdata","Users","_id",username)
-    return user["books"]
+    user = findPost("Userdata", "Users", "_id", username)
+    return [user["books"],user["movies"]]
 
 
 def checkUserOverdue(username):
-    user = findPost("Userdata","Users","_id",username)
+    user = findPost("Userdata", "Users", "_id", username)
     present = datetime.today()
-    overdue_books = []
+    overdue_items = []
 
     for book in user["books"]:
         if book["due_date"] < present:
-            overdue_books.append(book)
-    return overdue_books
+            overdue_items.append(book)
 
-
-
-
+    for movie in user["movies"]:
+        if movie["due_date"] < present:
+            overdue_items.append(movie)
+    return overdue_items
