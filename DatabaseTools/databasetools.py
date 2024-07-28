@@ -435,7 +435,7 @@ def ISBNSearch(isbn, collection):
 # Returns given username's books
 def getUserInventory(username):
     user = findPost("Userdata", "Users", "_id", username)
-    return user["books"]
+    return [user["books"],user["movies"]]
 
 
 def checkUserOverdue(username):
