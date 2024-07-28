@@ -22,7 +22,8 @@ def homepage():
         elif usertype == 'employee':
             return render_template('employee.html', username=username)
         else:  # member
-            return render_template('member.html', username=username)
+            inventory = getUserInventory(username)
+            return render_template('member.html', username=username,inventory=inventory,booklength=len(inventory[0]),movielength=len(inventory[1]))
     else:
         return render_template('homepage.html')
     # return render_template('homepage.html')
