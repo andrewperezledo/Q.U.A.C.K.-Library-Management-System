@@ -107,9 +107,11 @@ def catalog():
         
         flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
         searched_items = generalSearch(parameter, search_text, medium)
+
         if len(searched_items) == 0:
             flash("Your search did not match any items.", "info")
-            redirect(url_for('catalog'))
+            #return redirect(url_for('catalog'))
+        
         return render_template("catalog.html", len = len(searched_items), books = searched_items)
     
     all_books = getAllBooks()
