@@ -392,8 +392,8 @@ def updateUserRole(username, new_role):
 
 # Remove status? Perhaps check time and change status only when event is loaded in?
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
-def eventCreation(when, title, desc, contact='', approved=False, status="upcoming"):
-    post = {"_id": when, "approved": approved, "status": status, "title": title, "desc": desc, "contact": contact}
+def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
+    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "contact": contact, "attendess": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
@@ -407,7 +407,7 @@ def getEventsByDate(day):
     events = []
     # Iterates through events of specified date
     for i in range(1, 11):
-        post = findPost("Events", "Events", "_id", day + f"-{i:02d}")
+        post = findPost("Events", "Events", "_id", day + f"-{i}")
         if post and post != "fail":
             events.append(post)
 

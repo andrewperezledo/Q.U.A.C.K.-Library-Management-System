@@ -18,7 +18,17 @@ QUACK Events
 {% endblock %}
 
 {% block scripts %}
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+<script type="text/javascript">
+    const passedYear = {{event["year"]}};
+    const passedMonth = {{event["month"]}};
+    const passedDate = {{event["day"]}};
+    const passedPeriod = {{event["period"]}};
+    
+    // helperFunc = selectEvent({{event["year"]}}, {{event["month"]}}, {{event["day"]}}, {{event["period"]}});
+ </script>
 <script src="{{ url_for('static', filename='scripts/calender.js') }}" defer></script>
+
 {% endblock %}
 
 {% block content %}
@@ -46,13 +56,15 @@ QUACK Events
     </div>
 
     <section class="welcome-section">
-        <h2>Events for DATE</h2>
+        <h2>Events for {{ event }}</h2>
         <!-- If open: contact front desk about scheduling event or call 123-456-7890 -->
-        <p>{{ events }}
+        <!-- <p> {% for event in events %}
 
+                <li> event.title </li>
 
-
-        </p>
+            {% endfor %}
+        </p> -->
+        <ul class="events"></ul>
     </section>
 
     <section class="welcome-section">

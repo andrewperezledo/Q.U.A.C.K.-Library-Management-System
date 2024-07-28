@@ -184,11 +184,34 @@ def update_user_role():
     else:
         return redirect(url_for('homepage'))
 
-@app.route("/events", methods=['GET', 'POST'])
-def events():
-    # eventCreation(datetime.today().strftime('%Y-%m-%d') + "-01", "Birthday day!", "My birthday today! Call this number to RSVP!", "123-456-7890")
-    events = getEventsByDate(datetime.today().strftime('%Y-%m-%d'))
-    return render_template("events.html", events=events)
+@app.route("/events/", methods=['GET'])
+def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0):
+    # currDate = {"year": year, "month": month, "day": day}
+    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "My birthday today! Call this number to RSVP!", "123-456-7890")
+    return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
+
+# year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0
+# year=None, month=None, day=None, period=None
+# year=<year>&month=<month>&day=<day>&period=<period>
+@app.route("/events/?", methods=['GET'])
+def eventspecific(year=None, month=None, day=None, period=None):
+    selectedYear = request.args.get("year", type=int)
+    selectedMonth = request.args.get("month",  type=int)
+    selectedDay = request.args.get("day",  type=int)
+    selectedPeriod = request.args.get("period",  type=int)
+
+    currEvent = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+    print(currEvent)
+    return render_template("events.html", event=currEvent)
+
+@app.route('/get-event-by-day', methods=['POST'])
+def get_events_by_day():
+    events = []
+    if request.method == "POST":
+        data = request.get_json()
+        events = getEventsByDate(f"{data["year"]}-{data["month"]}-{data["day"]}")
+    
+    return events
 
 # Add "/events/register" route. Blueprint? Probably not worth it
 # if not logged in, redirect to login, then back to register page

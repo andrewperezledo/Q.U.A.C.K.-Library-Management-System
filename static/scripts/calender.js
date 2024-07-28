@@ -1,17 +1,27 @@
-// Most code from https://www.codingnepalweb.com/dynamic-calendar-html-css-javascript/
+// Skeleton of code from https://www.codingnepalweb.com/dynamic-calendar-html-css-javascript/
 
 const daysTag = document.querySelector(".days"),
 currentDate = document.querySelector(".current-date"),
 prevNextIcon = document.querySelectorAll(".icons span");
+const eventsTag = document.querySelector(".events");
 
 // getting new date, current year and month
 let date = new Date(),
-currYear = date.getFullYear(),
-currMonth = date.getMonth(),
-currDate = date.getDate(),
+// Actual initial values specifies at selectEvent()
+// currYear = date.getFullYear(),
+// currMonth = date.getMonth(),
+// selectedYear = currYear,
+// selectedMonth = currMonth,
+// selectedDate = date.getDate(),
+// selectedPeriod = 0;
+currYear = passedYear,
+currMonth = passedMonth - 1,
 selectedYear = currYear,
 selectedMonth = currMonth,
-selectedDate = date.getDate();
+selectedDate = passedDate,
+selectedPeriod = passedPeriod;
+
+let events = [];
 
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July",
@@ -34,10 +44,10 @@ const renderCalendar = () => {
         }
 
         if ((lastDateofLastMonth - i + 1) === selectedDate && selectedMonth === tempMonth && selectedYear === tempYear) {
-            liTag += `<li id="${lastDateofLastMonth - i + 1}" class="active" onclick="dayClicked('active', '${lastDateofLastMonth - i + 1}')">${lastDateofLastMonth - i + 1}</li>`;
+            liTag += `<li id="${lastDateofLastMonth - i + 1}" class="active" onclick="daySelected('active', '${lastDateofLastMonth - i + 1}')">${lastDateofLastMonth - i + 1}</li>`;
         }
         else
-            liTag += `<li id="${lastDateofLastMonth - i + 1}" class="inactive" onclick="dayClicked('inactive', '${lastDateofLastMonth - i + 1}')">${lastDateofLastMonth - i + 1}</li>`;
+            liTag += `<li id="${lastDateofLastMonth - i + 1}" class="inactive" onclick="daySelected('inactive', '${lastDateofLastMonth - i + 1}')">${lastDateofLastMonth - i + 1}</li>`;
     }
 
     for (let i = 1; i <= lastDateofMonth; i++) { // creating li of all days of current month
@@ -46,7 +56,7 @@ const renderCalendar = () => {
         let today = false;
         let selected = false;
 
-        if (i === currDate && currMonth === new Date().getMonth() 
+        if (i === new Date().getDate() && currMonth === new Date().getMonth() 
             && currYear === new Date().getFullYear()) {
             today = true;
         }
@@ -62,7 +72,7 @@ const renderCalendar = () => {
             isToday = "active"
 
         // Embedded onclick function wizardry :D
-        liTag += `<li id="${i}" class="${isToday}" onclick="dayClicked('${isToday}', '${i}')">${i}</li>`;
+        liTag += `<li id="${i}" class="${isToday}" onclick="daySelected('${isToday}', '${i}')">${i}</li>`;
     }
 
     for (let i = lastDayofMonth; i < 6; i++) { // creating li of next month first days
@@ -75,26 +85,30 @@ const renderCalendar = () => {
         }
 
         if ((i - lastDayofMonth + 1) === selectedDate && selectedMonth === tempMonth && selectedYear === tempYear)
-            liTag += `<li id="${i - lastDayofMonth + 1}" class="active" onclick="dayClicked('active', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
+            liTag += `<li id="${i - lastDayofMonth + 1}" class="active" onclick="daySelected('active', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
         else
-            liTag += `<li id="${i - lastDayofMonth + 1}" class="inactive" onclick="dayClicked('inactive', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
+            liTag += `<li id="${i - lastDayofMonth + 1}" class="inactive" onclick="daySelected('inactive', '${i - lastDayofMonth + 1}')">${i - lastDayofMonth + 1}</li>`;
     }
     currentDate.innerText = `${months[currMonth]} ${currYear}`; // passing current mon and yr as currentDate text
     daysTag.innerHTML = liTag;
 }
-renderCalendar();
+// renderCalendar();
+
+const renderEvents = () => {
+    let liTagE = "";
+    for (let i = 0; i < events.length; i++) {
+        liTagE += `<li>${events[i]["title"]}</li>`;
+    }
+    eventsTag.innerHTML = liTagE;
+}
 
 prevNextIcon.forEach(icon => { // getting prev and next icons
     icon.addEventListener("click", () => { // adding click event on both icons
         // if clicked icon is previous icon then decrement current month by 1 else increment it by 1
         if (icon.id === "prev")
-        {
             currMonth -= 1;
-        }
         else
-        {
             currMonth += 1;
-        }
 
         // firstLoad = false;
         // inMonth = currMonth === realMonth ? true : false; // checks to see if real month being displayed
@@ -111,31 +125,37 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
     });
 });
 
-// daysTag.forEach(day => { // all days
-//     day.addEventListener("click", () => { // adding click event on all days
-//         if (day.class == "inactive")
-//         {
-//             if (Number(day.id) < 15)
-//                 selectedMonth += 1;
-//             else
-//                 selectedMonth -= 1;
+function selectEvent(year, month, date, period) {
+    selectedYear = year;
+    selectedMonth = month;
+    selectedDate = date;
+    selectedPeriod = period;
 
-//             if (selectedMonth < 0) {
-//                 selectedYear -= 1;
-//                 selectedMonth = 11;
-//             }
-//             else if (selectedMonth > 11) {
-//                 selectedYear += 1;
-//                 selectedMonth = 0;
-//             }
-//         }
-//         selectedDay = Number(day.id);       
-//         dayClicked();
-//         renderCalendar(); // calling renderCalendar function
-//     });
-// });
+    // getEvents(selectedDate)
+}
 
-function dayClicked(day_class, day_id) {
+function getEvents(day_id) {
+    // Send selected day to url, then receive events for that day
+    renderCalendar();
+    fetch('/get-event-by-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+                 'year': selectedYear, 'month': selectedMonth + 1, 'day': day_id
+             })
+    })
+    .then(res => {return res.json();})
+    .then(data => {
+        events = data;
+        console.log(events);
+
+        renderEvents();
+    })
+    .catch(error => console.log(error))
+}
+getEvents(selectedDate);
+
+function daySelected(day_class, day_id) {
     if (day_class == "inactive")
     {
         if (Number(day_id) < 15)
@@ -168,8 +188,9 @@ function dayClicked(day_class, day_id) {
         selectedMonth = 0;
     }
 
-    selectedDate = Number(day_id); 
+    selectEvent(selectedYear, selectedMonth, parseInt(day_id), 0);
+    window.location.replace(`/events/%3F?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${0}`);
 
-    renderCalendar(); // calling renderCalendar function
+    
 }
-dayClicked('', selectedDate);
+//dayClicked('', selectedDate);

@@ -66,6 +66,9 @@ cursor: pointer;
 position: relative;
 margin-top: 30px;
 }
+.events {
+    color:#a11717
+}
 .days li.inactive{
 color: #898989;
 }
