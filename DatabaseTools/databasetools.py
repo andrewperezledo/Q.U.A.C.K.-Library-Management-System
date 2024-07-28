@@ -401,15 +401,19 @@ def eventCreation(when, title, desc, contact='', assigned_user='admin', attendee
         return add
 
 
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
 def getEventsByDate(day):
     events = []
     # Iterates through events of specified date
-    for i in range(1, 11):
+    for i in range(1, 8):
         post = findPost("Events", "Events", "_id", day + f"-{i}")
         if post and post != "fail":
             events.append(post)
+        else:
+            events.append({"title": f"{time_slots[i-1]} Available"})
 
     return events
 

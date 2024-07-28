@@ -185,7 +185,7 @@ def update_user_role():
         return redirect(url_for('homepage'))
 
 @app.route("/events/", methods=['GET'])
-def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0):
+def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
     # currDate = {"year": year, "month": month, "day": day}
     # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "My birthday today! Call this number to RSVP!", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
@@ -193,16 +193,19 @@ def events(year=datetime.today().year, month=datetime.today().month, day=datetim
 # year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0
 # year=None, month=None, day=None, period=None
 # year=<year>&month=<month>&day=<day>&period=<period>
-@app.route("/events/?", methods=['GET'])
+@app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
     selectedMonth = request.args.get("month",  type=int)
     selectedDay = request.args.get("day",  type=int)
     selectedPeriod = request.args.get("period",  type=int)
 
-    currEvent = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
-    print(currEvent)
-    return render_template("events.html", event=currEvent)
+    # If period out of bounds (not 1-8), then redirect?
+
+    selectedEvent = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+
+    return render_template("events.html", event=selectedEvent, month=currDate.strftime("%B"))
 
 @app.route('/get-event-by-day', methods=['POST'])
 def get_events_by_day():

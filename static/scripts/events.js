@@ -97,7 +97,13 @@ const renderCalendar = () => {
 const renderEvents = () => {
     let liTagE = "";
     for (let i = 0; i < events.length; i++) {
-        liTagE += `<li>${events[i]["title"]}</li>`;
+        var available_class = "";
+        if ("_id" in events[i])
+            available_class = "taken";
+        else
+            available_class = "open";
+
+        liTagE += `<li class="events_button ${available_class}">${events[i]["title"]}</li>`;
     }
     eventsTag.innerHTML = liTagE;
 }
@@ -125,6 +131,7 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
     });
 });
 
+// Modifies selected day
 function selectEvent(year, month, date, period) {
     selectedYear = year;
     selectedMonth = month;
@@ -135,8 +142,9 @@ function selectEvent(year, month, date, period) {
 }
 
 function getEvents(day_id) {
-    // Send selected day to url, then receive events for that day
+    // Render calender before fetch
     renderCalendar();
+    // Send selected day to url, then receive events for that day
     fetch('/get-event-by-day', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -188,8 +196,12 @@ function daySelected(day_class, day_id) {
         selectedMonth = 0;
     }
 
-    selectEvent(selectedYear, selectedMonth, parseInt(day_id), 0);
-    window.location.replace(`/events/%3F?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${0}`);
+    // Modifies selected day
+    // selectEvent(selectedYear, selectedMonth, parseInt(day_id), 0);
+    selectedDate = parseInt(day_id)
+
+    // Passes selected day into new URL
+    window.location.replace(`/events/e=?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${1}`);
 
     
 }
