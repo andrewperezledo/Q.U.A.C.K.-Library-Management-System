@@ -443,9 +443,9 @@ def checkUserOverdue(username):
 
     for book in user["books"]:
         if book["due_date"] < present:
-            overdue_books.append(book)
+            overdue_items.append(book)
 
     for movie in user["movies"]:
         if movie["due_date"] < present:
-            overdue_books.append(movie)
+            overdue_items.append(movie)
     return overdue_items
