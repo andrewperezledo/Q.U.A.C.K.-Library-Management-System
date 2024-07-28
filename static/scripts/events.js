@@ -98,14 +98,26 @@ const renderEvents = () => {
     let liTagE = "";
     for (let i = 0; i < events.length; i++) {
         var available_class = "";
-        if ("_id" in events[i])
+        if ("approved" in events[i]) {
             available_class = "taken";
+        }
         else
             available_class = "open";
 
-        liTagE += `<li class="events_button ${available_class}">${events[i]["title"]}</li>`;
+        // Optional (looks funny with three colors)
+        var prd = events[i]["_id"];
+        prd = prd[prd.length - 1];
+        if (prd == selectedPeriod)
+                available_class += " selected"
+        
+
+        liTagE += `<li class="events_button ${available_class}" onclick="eventSelected('${prd}')">${events[i]["title"]}</li>`;
     }
     eventsTag.innerHTML = liTagE;
+}
+
+function eventSelected(period) {
+    window.location.replace(`/events/e=?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${parseInt(period)}`);
 }
 
 prevNextIcon.forEach(icon => { // getting prev and next icons

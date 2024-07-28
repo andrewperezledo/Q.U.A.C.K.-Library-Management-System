@@ -187,7 +187,7 @@ def update_user_role():
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
     # currDate = {"year": year, "month": month, "day": day}
-    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "My birthday today! Call this number to RSVP!", "123-456-7890")
+    # eventCreation("2024-7-15" + "-3", "Birthday day 2!", "My birthday today! Call this number to RSVP!", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 # year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0

@@ -16,7 +16,20 @@ h1 {
 }
 
 h2 {
-    color: #34495e;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h4 {
+    color: #2c3e50;
+    font-size: 1.20em;
+    margin-bottom: 10px;
+    text-align: left;
+}
+h5 {
+    color: #2c3e50;
+    font-size: 1.05em;
     margin-bottom: 20px;
     text-align: center;
 }
@@ -86,6 +99,40 @@ p {
     transform: translate(-13px, -2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
+.selected{
+    /* box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; */
+    border-style: solid;
+    border-width: 0.32rem;
+    border-color: #00474fd0;
+}
+.selected:hover{
+    border-style: solid;
+    border-color: #001d21c2;
+}
+.rsvp_button{
+    padding: 15px 15px;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1.4em;
+    font-weight: 550;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    /* width: 200px; */
+    text-align: center;
+    transform: translate(90%);
+}
+.rsvp_button:hover{
+    background-color: #2980b9;
+    transform: translate(90%, -2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
 
 
 /* Most code from https://www.codingnepalweb.com/dynamic-calendar-html-css-javascript/ */

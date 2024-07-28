@@ -390,18 +390,18 @@ def updateUserRole(username, new_role):
     return result.modified_count > 0
 
 
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+
 # Remove status? Perhaps check time and change status only when event is loaded in?
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
 def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
-    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "contact": contact, "attendess": attendees}
+    period = time_slots[int(when[len(when)-1])-1]
+    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendess": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
     else:
         return add
-
-
-time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
 
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
@@ -413,7 +413,7 @@ def getEventsByDate(day):
         if post and post != "fail":
             events.append(post)
         else:
-            events.append({"title": f"{time_slots[i-1]} Available"})
+            events.append({"_id": f"{i}", "title": f"{time_slots[i-1]} Available", "time":f"{time_slots[i-1]}"})
 
     return events
 

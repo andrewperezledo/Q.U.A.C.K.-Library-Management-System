@@ -55,7 +55,6 @@ QUACK Events
     </div>
 
     <section class="events-section">
-        <div>
         <h2>Events for {{ month }} {{ event["day"] }}, {{ event["year"] }}</h2>
         <!-- If open: contact front desk about scheduling event or call 123-456-7890 -->
         <!-- <p> {% for event in events %}
@@ -67,9 +66,19 @@ QUACK Events
         <ul class="events"></ul>
     </section>
 
+    <!-- Template to be loaded by js when event clicked -->
     <section class="event-section">
-        <h2>SPecific for some reason super long Event Title</h2>
-        <h3></h3>
+        <h2>Super Cool Birthday, 5 years old? No way!!</h2>
+        <h2>Super cool image w/ border :)</h2>
+
+        <!-- https://stackoverflow.com/questions/14096292/how-to-have-two-headings-on-the-same-line-in-html -->
+        <div style="clear: both;">
+            <h4 style="float: left;">9:00am - 10:00am</h4>
+            <h4 style="float: right;">Contact for Info: 123-456-7890</h4>
+        </div>
+        <br>
+        <h5 style="float: left">Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.</h5>
+        <button class="rsvp_button"> RSVP for event </button>
     </section>
     
 </main>
