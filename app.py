@@ -233,7 +233,7 @@ def get_events_by_day():
     events = []
     if request.method == "POST":
         data = request.get_json()
-        events = getEventsByDate(f"{data["year"]}-{data["month"]}-{data["day"]}")
+        events = getEventsByDate(f"{data['year']}-{data['month']}-{data['day']}")
     
     return events
 
@@ -277,6 +277,11 @@ def event_create():
             return render_template("create_event.html")
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("not_found.html")
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)
