@@ -15,15 +15,15 @@ QUACK Catalog
 
 <!-- FIXME searchbar -->
  <div class="searchbar" style="display: flex; justify-content: center;">
-    <form class="d-flex input-group w-auto", method="post" style=" margin-bottom: 10px;">
+    <form class="d-flex input-group w-auto", method="post" style=" margin-bottom: 10px; background-color: aliceblue;">
                        
         <!-- Potential to make look better :) -->
-        <select name="medium" id="medium">
+        <select name="medium" id="medium" style="background-color: aliceblue;">
             <option value="Books">Books</option>
             <option value="Movies">Movies</option>
         </select>
 
-        <select name="parameter" id="parameter">
+        <select name="parameter" id="parameter" style="background-color: aliceblue;">
             <option value="title">Title</option>
             <option value="_id">ISBN</option>
             <option value="genre">Genre</option>
@@ -41,7 +41,7 @@ QUACK Catalog
         placeholder="Search"
         aria-label="Search"
         aria-describedby="search-addon"
-         style="width: 600px;"/>
+         style="width: 600px; background-color: aliceblue;"/>
        
         </span>
     </form>
@@ -57,54 +57,124 @@ QUACK Catalog
     {% endif %}
 {% endwith %}
 </div>
-<table style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
-    
-        <th> 
-            <tr style="color: black; ">     
-            <td>Title</td> 
-            <td>Info</td> 
-    </tr> 
-        </th> 
-    {%for i in range(0, len)%}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/> 
-    
-    <div class = book-table>
-        <tr> 
-            <td>{{books[i]["title"]}}</td> 
-            <td>
-                <div class="book">
-                    <p style="text-align: center;">ISBN: {{books[i]['_id']}}<br>
-                    Author: {{books[i]['author']}}<br>
-                    Year: {{books[i]['release_year']}}<br>
-                    Genre: {{books[i]['genre']}}<br>
-                    Publisher: {{books[i]['publisher']}}<br>
-                    Is Available: {{books[i]['availability']}}    
-                    </p>
-                    <div class="cover">
-                        <div  z-index: 0 style="text-align: center;">Image Not Available</div>
-                        <img style="position: fixed;" src="{{books[i]['cover_img']}}"  height="210px" width="140px">
-                    </div>
+
+{% if len != 0:%}
+
+{% if books[0]['author']:%}
+<table class="Book-Only-Table" style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
+    <th> 
+        <tr style="color: black; ">
+        <td>Title/ISBN</td>
+        <td>Description</td>
+        <td>Author</td>
+        <td>Year</td>      
+        <td>Genre</td>
+        <td>Publisher</td> 
+        <td>Availability</td>
+        <td>Copies</td>
+        <td>Version</td>
+        <td></td>  
+</tr> 
+    </th> 
+{%for i in range(0, len)%}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/> 
+
+<div class = book-table>
+    <tr> 
+        <td style="max-width: 300px;">{{books[i]["title"]}}<br>
+            ISBN: {{books[i]["_id"]}}
+
+        </td> 
+        <td class="desc">
+            <div class="book">
+                <p style="text-align: center;">
+                {{books[i]['description']}}<br> 
+                </p>
+                <div class="cover">
+                    <div  z-index: 0 style="text-align: center;">Image Not Available</div>
+                    <img style="position: fixed;" src="{{books[i]['cover_img']}}"  height="210px" width="140px">
                 </div>
-            </td>
-            <td>
-                {% if books[i]['author']:%}
-                    {% set medium = "Books"%}
-                {% else %}
-                    {% set medium = "Movies" %}       
-                {% endif %}
-                <form action="/checkout" method="POST">
-                    <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
-                    <input type="hidden" name="type" value="{{medium}}">
-                    <button id="home_button" type="submit">Checkout</button>
-                </form>
-            </td> 
-        </tr> 
-          
-        
-        
-            
-    </div>     
-    {%endfor%}
-</table> 
+            </div>
+        </td>
+        <td class="Author">{{books[i]['author']}}</td>
+        <td class="Year">{{books[i]['release_year']}}</td>
+        <td class="Genre"style="max-width: 100px;">{{books[i]['genre']}}</td>
+        <td class="Publisher" style="max-width: 200px;">{{books[i]['publisher']}}</td>
+        <td class="Availability">{{books[i]['availability']}}</td>
+        <td class="Copies">{{books[i]['copies']}}</td>
+        <td class="Version">{{books[i]['version']}}</td>
+
+        <td class="checkout_button">
+            {% if books[i]['author']:%}
+                {% set medium = "Books"%}
+            {% else %}
+                {% set medium = "Movies" %}       
+            {% endif %}
+            <form action="/checkout" method="POST">
+                <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                <input type="hidden" name="type" value="{{medium}}">
+                <button id="home_button" type="submit">Checkout</button>
+            </form>
+        </td> 
+    </tr>    
+</div>     
+{%endfor%}
+</table>   
+
+
+{% else %}
+<table class="Book-Only-Table" style="margin-left: 20px; align-self: center; margin-left: auto; margin-right: auto;"> 
+    <th> 
+        <tr style="color: black; ">
+        <td>Title</td>
+        <td>Info</td>
+        <td></td> 
+     
+</tr> 
+    </th> 
+{%for i in range(0, len)%}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/book.css')}}"/> 
+
+<div class = book-table>
+    <tr> 
+        <td style="max-width: 300px;">{{books[i]["title"]}}</td> 
+        <td class="desc">
+            <div class="book">
+                <p style="text-align: center;">
+                ID: {{books[i]['_id']}}<br>
+                Year: {{books[i]['release_year']}}<br>
+                Genre: {{books[i]['genre']}}<br>  
+                Audience Score: {{books[i]['audience_score']}}<br> 
+                Rotten Tomatoe Score: {{books[i]['rotten_score']}}<br> 
+                Availability: {{books[i]['availability']}}<br> 
+                </p>
+                <div class="cover">
+                    <div  z-index: 0 style="text-align: center;">Image Not Available</div>
+                    <img style="position: fixed;" src="{{books[i]['cover_img']}}"  height="210px" width="140px">
+                </div>
+            </div>
+        </td>
+    
+        <td class="checkout_button">
+            {% if books[i]['author']:%}
+                {% set medium = "Books"%}
+            {% else %}
+                {% set medium = "Movies" %}       
+            {% endif %}
+            <form action="/checkout" method="POST">
+                <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                <input type="hidden" name="type" value="{{medium}}">
+                <button id="home_button" type="submit">Checkout</button>
+            </form>
+        </td> 
+    </tr>    
+</div>     
+{%endfor%}
+</table>  
+                    
+{% endif %}
+{% endif %}
+
+ 
 <p></p>
 {% endblock %}
