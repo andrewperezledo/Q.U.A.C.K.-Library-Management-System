@@ -111,10 +111,8 @@ p {
     border-style: solid;
     border-color: #001d21c2;
 }
-.rsvp_button{
+._button{
     padding: 15px 15px;
-    color: white;
-    background-color: #3498db;
     border: none;
     border-radius: 25px;
     cursor: pointer;
@@ -125,12 +123,29 @@ p {
     margin: 10px 0;
     /* width: 200px; */
     text-align: center;
-    transform: translate(90%);
+    /* Makeshift for proper center */
+    transform: translate(95%);
 }
-.rsvp_button:hover{
+.create_event{
+    background-color: #3498db;
+    color: white;
+    transform: translate(105%);
+}
+.rsvp_authed{
+    background-color: #3498db;
+    color: white;
+}
+.rsvp_unauthed{
+    background-color: rgb(88, 88, 88);
+    color: white;
+}
+.rsvp_authed:hover{
     background-color: #2980b9;
-    transform: translate(90%, -2px);
+    transform: translate(95%, -2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+.rsvp_unauthed:hover{
+    background-color: #6f3333;
 }
 
 

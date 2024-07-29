@@ -3,25 +3,21 @@
 const daysTag = document.querySelector(".days"),
 currentDate = document.querySelector(".current-date"),
 prevNextIcon = document.querySelectorAll(".icons span");
-const eventsTag = document.querySelector(".events");
+const eventsTag = document.querySelector(".events"),
+eventInfoTag = document.querySelector(".event_info");
 
 // getting new date, current year and month
 let date = new Date(),
-// Actual initial values specifies at selectEvent()
-// currYear = date.getFullYear(),
-// currMonth = date.getMonth(),
-// selectedYear = currYear,
-// selectedMonth = currMonth,
-// selectedDate = date.getDate(),
-// selectedPeriod = 0;
 currYear = passedYear,
 currMonth = passedMonth - 1,
 selectedYear = currYear,
 selectedMonth = currMonth,
 selectedDate = passedDate,
 selectedPeriod = passedPeriod;
+let firstLoad = true;
 
 let events = [];
+let usertype = "unauthenticated";
 
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July",
@@ -98,23 +94,47 @@ const renderEvents = () => {
     let liTagE = "";
     for (let i = 0; i < events.length; i++) {
         var available_class = "";
-        if ("approved" in events[i]) {
+        var event_title = "";
+        if ("approved" in events[i] && events[i]["approved"] == true) {
             available_class = "taken";
+            event_title = events[i]["title"]
         }
-        else
+        else {
             available_class = "open";
+            event_title = events[i]["time"] + " Available";
+        }
 
-        // Optional (looks funny with three colors)
         var prd = events[i]["_id"];
         prd = prd[prd.length - 1];
         if (prd == selectedPeriod)
                 available_class += " selected"
         
 
-        liTagE += `<li class="events_button ${available_class}" onclick="eventSelected('${prd}')">${events[i]["title"]}</li>`;
+        liTagE += `<li class="events_button ${available_class}" onclick="eventSelected('${prd}')">${event_title}</li>`;
     }
     eventsTag.innerHTML = liTagE;
 }
+
+const renderEventInfo = (period) => {
+    let EvTag = "";
+    var i = period-1;
+    if ("approved" in events[i] && events[i]["approved"] == true) {
+        EvTag += `
+        <h2>${events[i]["title"]}</h2>
+        <h2>Image w/ border here :)</h2>
+        <!-- https://stackoverflow.com/questions/14096292/how-to-have-two-headings-on-the-same-line-in-html -->
+        <div style="clear: both;">
+            <h4 style="float: left;">${events[i]["time"]}</h4>
+            <h4 style="float: right;">Contact for Info: ${events[i]["contact"]}</h4>
+        </div>
+        <br>
+        <h5 style="float: left">${events[i]["desc"]}</h5>
+        `;
+    }
+    eventInfoTag.innerHTML = EvTag;
+}
+
+sessionStorage.setItem("usertype", "admin");
 
 function eventSelected(period) {
     window.location.replace(`/events/e=?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${parseInt(period)}`);
@@ -127,9 +147,6 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
             currMonth -= 1;
         else
             currMonth += 1;
-
-        // firstLoad = false;
-        // inMonth = currMonth === realMonth ? true : false; // checks to see if real month being displayed
 
         if(currMonth < 0 || currMonth > 11) { // if current month is less than 0 or greater than 11
             // creating a new date of current year & month and pass it as date value
@@ -167,9 +184,9 @@ function getEvents(day_id) {
     .then(res => {return res.json();})
     .then(data => {
         events = data;
-        console.log(events);
-
+        //console.log(events);
         renderEvents();
+        renderEventInfo(selectedPeriod);
     })
     .catch(error => console.log(error))
 }
@@ -209,7 +226,6 @@ function daySelected(day_class, day_id) {
     }
 
     // Modifies selected day
-    // selectEvent(selectedYear, selectedMonth, parseInt(day_id), 0);
     selectedDate = parseInt(day_id)
 
     // Passes selected day into new URL
@@ -217,4 +233,3 @@ function daySelected(day_class, day_id) {
 
     
 }
-//dayClicked('', selectedDate);

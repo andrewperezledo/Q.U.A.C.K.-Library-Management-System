@@ -187,7 +187,7 @@ def update_user_role():
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
     # currDate = {"year": year, "month": month, "day": day}
-    # eventCreation("2024-7-15" + "-3", "Birthday day 2!", "My birthday today! Call this number to RSVP!", "123-456-7890")
+    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 # year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=0
@@ -202,10 +202,23 @@ def eventspecific(year=None, month=None, day=None, period=None):
 
     # If period out of bounds (not 1-8), then redirect?
 
-    selectedEvent = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
     currDate = datetime(selectedYear, selectedMonth, selectedDay)
 
-    return render_template("events.html", event=selectedEvent, month=currDate.strftime("%B"))
+    usertype = ""
+    if 'usertype' in session:
+            if session['usertype'] == 'admin':
+                usertype = "admin"
+            elif session['usertype'] == 'employee':
+                usertype = "employee"
+            else:
+                usertype = "member"
+    else:
+        usertype = "unauthenticated"
+
+
+
+    return render_template("events.html", event=selectedEventDate, slotAvailable=isSlotAvailable(selectedEventDate), month=currDate.strftime("%B"), usertype=usertype)
 
 @app.route('/get-event-by-day', methods=['POST'])
 def get_events_by_day():
@@ -215,6 +228,22 @@ def get_events_by_day():
         events = getEventsByDate(f"{data["year"]}-{data["month"]}-{data["day"]}")
     
     return events
+
+# Returns the type of user in dict format
+@app.route('/get-user-info', methods=["POST"])
+def get_user_info():
+    user_info = {}
+    if request.method == "POST":
+        if 'usertype' in session:
+            if session['usertype'] == 'admin':
+                user_info = {"user_type": "admin"}
+            elif session['usertype'] == 'employee':
+                user_info = {"user_type": "employee"}
+            else:
+                user_info = {"user_type": "member"}
+        else:
+            user_info = {"user_type": "unauthenticated"}
+    return user_info
 
 # Add "/events/register" route. Blueprint? Probably not worth it
 # if not logged in, redirect to login, then back to register page

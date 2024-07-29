@@ -56,29 +56,30 @@ QUACK Events
 
     <section class="events-section">
         <h2>Events for {{ month }} {{ event["day"] }}, {{ event["year"] }}</h2>
-        <!-- If open: contact front desk about scheduling event or call 123-456-7890 -->
-        <!-- <p> {% for event in events %}
-
-                <li> event.title </li>
-
-            {% endfor %}
-        </p> -->
         <ul class="events"></ul>
     </section>
 
-    <!-- Template to be loaded by js when event clicked -->
+    <!-- Template to be loaded (for approved events) by js when event clicked -->
     <section class="event-section">
-        <h2>Super Cool Birthday, 5 years old? No way!!</h2>
-        <h2>Super cool image w/ border :)</h2>
 
-        <!-- https://stackoverflow.com/questions/14096292/how-to-have-two-headings-on-the-same-line-in-html -->
-        <div style="clear: both;">
-            <h4 style="float: left;">9:00am - 10:00am</h4>
-            <h4 style="float: right;">Contact for Info: 123-456-7890</h4>
-        </div>
-        <br>
-        <h5 style="float: left">Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.</h5>
-        <button class="rsvp_button"> RSVP for event </button>
+        {% if slotAvailable %}
+            <div class="event_info"></div>
+            {% if usertype == "admin" or usertype == "employee" or usertype == "member" %}
+                <button class="_button rsvp_authed"> RSVP for event </button>
+            {% else %}
+                <button class="_button rsvp_unauthed"> RSVP for event </button>
+            {% endif %}
+        {% else %}
+            <h2>Event not Created or Approved</h2>
+            <br>
+            {% if usertype == "admin" or usertype == "employee"%}
+                <h4 style="text-align: center;">If not waiting on approval, create event here:</h4>
+                <button class="_button create_event"> Create Event </button>
+            {% else %}
+                <h4 style="text-align: center;">Please contact front desk or call 123-456-7890 to see about reserving an event.</h4>
+            {% endif %}
+        {% endif %}
+        
     </section>
     
 </main>

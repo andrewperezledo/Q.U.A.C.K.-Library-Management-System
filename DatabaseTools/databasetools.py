@@ -410,13 +410,19 @@ def getEventsByDate(day):
     # Iterates through events of specified date
     for i in range(1, 8):
         post = findPost("Events", "Events", "_id", day + f"-{i}")
-        if post and post != "fail":
+        if post and post != "fail" and post["approved"]:
             events.append(post)
         else:
             events.append({"_id": f"{i}", "title": f"{time_slots[i-1]} Available", "time":f"{time_slots[i-1]}"})
 
     return events
 
+
+def isSlotAvailable(data):
+    post = findPost("Events", "Events", "_id", f"{data["year"]}-{data["month"]}-{data["day"]}-{data["period"]}")
+    if post and post != "fail" and post["approved"]:
+        return True
+    return False
 
 def ISBNSearch(isbn, collection):
     database = cluster['Inventory']
