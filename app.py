@@ -233,7 +233,7 @@ def get_events_by_day():
     events = []
     if request.method == "POST":
         data = request.get_json()
-        events = getEventsByDate(f"{data["year"]}-{data["month"]}-{data["day"]}")
+        events = getEventsByDate(f"{data['year']}-{data['month']}-{data['day']}")
     
     return events
 
