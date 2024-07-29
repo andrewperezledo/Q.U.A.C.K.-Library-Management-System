@@ -154,15 +154,35 @@ def check():
     username = session['username']
     if collection == "Books":
         status = bookCheckout(isbn, username)
-        flash(status, "info")
+        if status == "User has overdue items.":
+            flash(status, "info")
+        elif status == "Book unavailable":
+            # logic for redirecting to queue page
+            session["item_isbn"] = isbn
+            return redirect(url_for('joinwaitlist'))
+        else:
+            flash(status, "info")
         
     elif collection == "Movies":
         status = movieCheckout(int(isbn), username)
-        flash(status, "info")
+        if status == "User has overdue items.":
+            flash(status, "info")
+        elif status == "Movie unavailable":
+            # logic for redirecting to queue page
+            return redirect(url_for('joinwaitlist'))
+        else:
+            flash(status, "info")
 
     return redirect(url_for('catalog'))
-       
-    
+
+
+@app.route("/reservation", methods=('GET', 'POST'))
+def joinwaitlist():
+    # Add good displaying features to reservation.html page and here
+    isbn = session['item_isbn']
+    session.pop("item_isbn")
+    return render_template('reservation.html', item_isbn = isbn)
+
 @app.route('/logout')
 def logout():
     session.pop('username', None)
