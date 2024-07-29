@@ -17,15 +17,12 @@ QUACK Events
 {% endblock %}
 
 {% block scripts %}
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <script type="text/javascript">
     const passedYear = {{event["year"]}};
     const passedMonth = {{event["month"]}};
     const passedDate = {{event["day"]}};
     const passedPeriod = {{event["period"]}};
-    
-    // helperFunc = selectEvent({{event["year"]}}, {{event["month"]}}, {{event["day"]}}, {{event["period"]}});
- </script>
+</script>
 <script src="{{ url_for('static', filename='scripts/events.js') }}" defer></script>
 
 {% endblock %}
@@ -65,16 +62,31 @@ QUACK Events
         {% if slotAvailable %}
             <div class="event_info"></div>
             {% if usertype == "admin" or usertype == "employee" or usertype == "member" %}
-                <button class="_button rsvp_authed"> RSVP for event </button>
+                <!-- Needs: subscribed_events section under user. Can look for event _id (or title) in attribute to see if they have already rsvp'd -->
+                <a href='{{ url_for("event_rsvp", year=event["year"], month=event["month"], day=event["day"], period=event["period"]) }}'><button class="_button rsvp_authed"> RSVP for event </button></a>
             {% else %}
-                <button class="_button rsvp_unauthed"> RSVP for event </button>
+                <!-- Takes to create user. Needs: login button under create user. Redirect from user creation to origin page (here) -->
+                <a href='{{ url_for("event_rsvp", year=event["year"], month=event["month"], day=event["day"], period=event["period"]) }}'><button class="_button rsvp_unauthed"> RSVP for event </button></a>
             {% endif %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for cat, msg in messages %}
+                            {% if cat == "error" %}
+                                <h4 style="text-align: center; color:rgba(255, 0, 0, 0.59)">{{msg}}</h4>
+                            {% else %}
+                                <h4 style="text-align: center; color:rgb(0, 108, 132)">{{msg}}</h4>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
         {% else %}
             <h2>Event not Created or Approved</h2>
             <br>
             {% if usertype == "admin" or usertype == "employee"%}
                 <h4 style="text-align: center;">If not waiting on approval, create event here:</h4>
-                <button class="_button create_event"> Create Event </button>
+                <!-- Needs: event creation menu -->
+                <!-- For assigned user, subcribe them to event and incriment rsvp by one -->
+                <a href="{{ url_for('event_create') }}"><button class="_button create_event"> Create Event </button></a>
             {% else %}
                 <h4 style="text-align: center;">Please contact front desk or call 123-456-7890 to see about reserving an event.</h4>
             {% endif %}

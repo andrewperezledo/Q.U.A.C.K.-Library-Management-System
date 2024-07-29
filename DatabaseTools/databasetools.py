@@ -396,7 +396,7 @@ time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
 def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
     period = time_slots[int(when[len(when)-1])-1]
-    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendess": attendees}
+    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendees": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
@@ -423,6 +423,16 @@ def isSlotAvailable(data):
     if post and post != "fail" and post["approved"]:
         return True
     return False
+
+
+def incrimentRSVP(data):
+    post = findPost("Events", "Events", "_id", f"{data["year"]}-{data["month"]}-{data["day"]}-{data["period"]}")
+    if post and post != "fail" and post["approved"]:
+        attendees = post["attendees"] + 1
+        updatePost("Events", "Events", "_id", f"{data["year"]}-{data["month"]}-{data["day"]}-{data["period"]}", "attendees", attendees)
+        return True
+    return False
+
 
 def ISBNSearch(isbn, collection):
     database = cluster['Inventory']
