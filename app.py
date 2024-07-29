@@ -177,11 +177,25 @@ def check():
 
 
 @app.route("/reservation", methods=('GET', 'POST'))
-def joinwaitlist():
-    # Add good displaying features to reservation.html page and here
-    isbn = session['item_isbn']
-    session.pop("item_isbn")
-    return render_template('reservation.html', item_isbn = isbn)
+def waitlist():
+    if "username" in session:
+        # Add good displaying features to reservation.html page and here
+        isbn = session['item_isbn']
+        if isbn is int:
+            item = ISBNSearch(isbn,"Movies")
+        else:
+            item = ISBNSearch(isbn,"Books")
+        item_title = item[0]["title"]
+        waittime = len(item[0]["reservation_queue"])*3 + 3
+        return render_template('reservation.html', item_isbn = isbn,item = item[0],waittime = str(waittime))
+
+
+@app.route("/reservation/joining", methods=('GET', 'POST'))
+def listjoin():
+    if "username" in session:
+        joinItemWaitlist(session['item_isbn'], session['username'])
+        flash("You have successfully joined your waitlist.", "info")
+    return redirect(url_for('catalog'))
 
 @app.route('/logout')
 def logout():

@@ -180,6 +180,19 @@ def checkBookAvailability(isbn):
     return data["availability"]
 
 
+def joinItemWaitlist(isbn,username):
+    print("JOINING__________________")
+    if isbn is int:
+        data = findPost("Inventory", "Movies", "_id", isbn)
+        newqueue = data["reservation_queue"]
+        newqueue.append(username)
+        updatePost("Inventory", "Movies", "_id", isbn, "reservation_queue", newqueue)
+    else:
+        data = findPost("Inventory", "Books", "_id", isbn)
+        newqueue = data["reservation_queue"]
+        newqueue.append(username)
+        updatePost("Inventory", "Books", "_id", isbn, "reservation_queue", newqueue)
+
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
