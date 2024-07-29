@@ -180,6 +180,19 @@ def checkBookAvailability(isbn):
     return data["availability"]
 
 
+def joinItemWaitlist(isbn,username):
+    print("JOINING__________________")
+    if isbn is int:
+        data = findPost("Inventory", "Movies", "_id", isbn)
+        newqueue = data["reservation_queue"]
+        newqueue.append(username)
+        updatePost("Inventory", "Movies", "_id", isbn, "reservation_queue", newqueue)
+    else:
+        data = findPost("Inventory", "Books", "_id", isbn)
+        newqueue = data["reservation_queue"]
+        newqueue.append(username)
+        updatePost("Inventory", "Books", "_id", isbn, "reservation_queue", newqueue)
+
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
@@ -395,31 +408,48 @@ def updateUserRole(username, new_role):
     return result.modified_count > 0
 
 
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+
 # Remove status? Perhaps check time and change status only when event is loaded in?
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
-def eventCreation(when, title, desc, contact='', approved=False, status="upcoming"):
-    post = {"_id": when, "approved": approved, "status": status, "title": title, "desc": desc, "contact": contact}
+def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
+    period = time_slots[int(when[len(when)-1])-1]
+    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendees": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
     else:
         return add
 
-
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
 def getEventsByDate(day):
-    # database = cluster["Events"]
-    # coll = database["Events"]
-
-    users = []
+    events = []
     # Iterates through events of specified date
-    for i in range(1, 11):
-        post = findPost("Events", "Events", "_id", day + f"-{i:02d}")
-        if post and post != "fail":
-            users.append(post)
+    for i in range(1, 8):
+        post = findPost("Events", "Events", "_id", day + f"-{i}")
+        if post and post != "fail" and post["approved"]:
+            events.append(post)
+        else:
+            events.append({"_id": f"{i}", "title": f"{time_slots[i-1]} Available", "time":f"{time_slots[i-1]}"})
 
-    return users
+    return events
+
+
+def isSlotAvailable(data):
+    post = findPost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}")
+    if post and post != "fail" and post["approved"]:
+        return True
+    return False
+
+
+def incrimentRSVP(data):
+    post = findPost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}")
+    if post and post != "fail" and post["approved"]:
+        attendees = post["attendees"] + 1
+        updatePost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}", "attendees", attendees)
+        return True
+    return False
 
 
 def ISBNSearch(isbn, collection):
