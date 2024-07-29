@@ -142,6 +142,7 @@ def checkout():
          flash('You must be logged in to checkout.', 'info')
          return redirect(url_for('catalog'))
 
+
 # this function actually checks out the book as user is logged in
 @app.route("/check", methods=('GET', 'POST'))
 def check():
@@ -162,12 +163,12 @@ def check():
     return redirect(url_for('catalog'))
        
     
-
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     session.pop('usertype', None)
     return redirect(url_for('homepage'))
+
 
 @app.route('/admin/manage-employees')
 def manage_employees():
@@ -187,14 +188,95 @@ def update_user_role():
     else:
         return redirect(url_for('homepage'))
 
-@app.route("/events", methods=['GET', 'POST'])
-def events():
-    # eventCreation(datetime.today().strftime('%Y-%m-%d') + "-01", "Birthday day!", "My birthday today! Call this number to RSVP!", "123-456-7890")
-    events = getEventsByDate(datetime.today().strftime('%Y-%m-%d'))
-    return render_template("events.html", events=events)
 
-# Add "/events/register" route. Blueprint? Probably not worth it
-# if not logged in, redirect to login, then back to register page
+@app.route("/events/", methods=['GET'])
+def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
+    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
+    return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
+
+
+# year=<year>&month=<month>&day=<day>&period=<period>
+@app.route("/events/e=", methods=['GET'])
+def eventspecific(year=None, month=None, day=None, period=None):
+    selectedYear = request.args.get("year", type=int)
+    selectedMonth = request.args.get("month",  type=int)
+    selectedDay = request.args.get("day",  type=int)
+    selectedPeriod = request.args.get("period",  type=int)
+
+    # If period out of bounds (not 1-7), then redirect?
+    # How????
+    # if (selectedPeriod is not None):
+    #     if (selectedPeriod < 1):
+    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=1))
+    #     elif (selectedPeriod > 7):
+    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
+
+    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+
+    usertype = ""
+    if 'usertype' in session:
+            if session['usertype'] == 'admin':
+                usertype = "admin"
+            elif session['usertype'] == 'employee':
+                usertype = "employee"
+            else:
+                usertype = "member"
+    else:
+        usertype = "unauthenticated"
+
+    return render_template("events.html", event=selectedEventDate, slotAvailable=isSlotAvailable(selectedEventDate), month=currDate.strftime("%B"), usertype=usertype)
+
+
+@app.route('/get-event-by-day', methods=['POST'])
+def get_events_by_day():
+    events = []
+    if request.method == "POST":
+        data = request.get_json()
+        events = getEventsByDate(f"{data["year"]}-{data["month"]}-{data["day"]}")
+    
+    return events
+
+# Returns the type of user in dict format
+# @app.route('/get-user-info', methods=["POST"])
+# def get_user_info():
+#     user_info = {}
+#     if request.method == "POST":
+#         if 'usertype' in session:
+#             if session['usertype'] == 'admin':
+#                 user_info = {"user_type": "admin"}
+#             elif session['usertype'] == 'employee':
+#                 user_info = {"user_type": "employee"}
+#             else:
+#                 user_info = {"user_type": "member"}
+#         else:
+#             user_info = {"user_type": "unauthenticated"}
+#     return user_info
+
+@app.route('/event-rsvp/', methods=['GET'])
+def event_rsvp(year=None, month=None, day=None, period=None):
+    selectedYear = request.args.get("year", type=int)
+    selectedMonth = request.args.get("month",  type=int)
+    selectedDay = request.args.get("day",  type=int)
+    selectedPeriod = request.args.get("period",  type=int)
+    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+    if 'usertype' in session:
+        if not incrimentRSVP(selectedEventDate):
+            flash("An error has occured", "error")
+        else:
+            flash("RSVP addded", "info")
+    else:
+        flash("Must be logged in to RSVP events", "error")
+    return redirect(url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
+
+
+@app.route('/events/create/')
+def event_create():
+    if 'usertype' in session:
+        if session['usertype'] == "admin" or session['usertype'] == "employee":
+            return render_template("create_event.html")
+    flash("Must be library staff member to create events", "error")
+    return redirect(url_for('login'))
 
 if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
     app.run(debug=True)

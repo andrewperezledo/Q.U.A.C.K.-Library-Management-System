@@ -21,13 +21,6 @@ QUACK Home
         <section class="welcome-section">
             <h2>Login</h2>
             <div class="login-form">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for msg in messages %}
-                            <p>{{msg}}</p>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
                 <form method="POST">
                     <p>
                         <input type="text" name="content_username"
@@ -39,6 +32,17 @@ QUACK Home
                             placeholder="Password"></input>
                     </p>
                     <button id="home_button" type="submit">Login</button>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for cat, msg in messages %}
+                                {% if cat == "error" %}
+                                    <h5 style="text-align: center; color:rgba(255, 0, 0, 0.59); font-size: 1.1em;">{{msg}}</h5>
+                                {% else %}
+                                    <h5 style="text-align: center; color:rgb(0, 108, 132); font-size: 1.1em;">{{msg}}</h5>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                 </form>
             </div>
         </section>
