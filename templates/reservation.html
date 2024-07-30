@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+Reservation Management
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <!-- <section class="welcome-section"> -->
+        <section class="welcome-section">
+            <h2>Reservation</h2>
+            <div class="reservations">
+
+                <p>
+                    Would you like to join the waitlist for this item?<br>
+                    Title: {{item["title"]}}
+                </p>
+                <p>The item will be available in roughly {{waittime}} days.</p>
+
+
+                <button id="home_button" onclick="location.href='/reservation/joining'" type="submit">Join Waitlist</button>
+            </div>
+        </section>
+    </main>
+{% endblock %}

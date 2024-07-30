@@ -23,12 +23,13 @@ def homepage():
             return render_template('employee.html', username=username)
         else:  # member
             inventory = getUserInventory(username)
-            return render_template('member.html', username=username,inventory=inventory,booklength=len(inventory[0]),movielength=len(inventory[1]))
+            data = findPost("Userdata", "Users", "_id", username)
+            return render_template('member.html', username=username, inventory=inventory,
+                                   booklength=len(inventory[0]), movielength=len(inventory[1]),
+                                   waitlist=data["waitlist_items"], waitlistlength=len(data["waitlist_items"]))
     else:
         return render_template('homepage.html')
     # return render_template('homepage.html')
-
-
 
 
 @app.route('/create-user', methods=('GET', 'POST'))
@@ -90,7 +91,7 @@ def login():
 #             return render_template('member.html', username=username)
 #     else:
 #         return render_template('homepage.html')
-    
+
 
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
 @app.route("/catalog", methods=('GET', 'POST'))
@@ -104,18 +105,18 @@ def catalog():
         if medium == "Movies" and parameter not in ["title", "release_year", "genre"]:
             flash("You can only search movies by Title or Year.", "info")
             return redirect(url_for('catalog'))
-        
+
         flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
         searched_items = generalSearch(parameter, search_text, medium)
 
         if len(searched_items) == 0:
             flash("Your search did not match any items.", "info")
             #return redirect(url_for('catalog'))
-        
-        return render_template("catalog.html", len = len(searched_items), books = searched_items)
-    
+
+        return render_template("catalog.html", len=len(searched_items), books=searched_items)
+
     all_books = getAllBooks()
-    return render_template("catalog.html", len = len(all_books), books = all_books)
+    return render_template("catalog.html", len=len(all_books), books=all_books)
 
 
 @app.route("/checkout", methods=('GET', 'POST'))
@@ -129,18 +130,17 @@ def checkout():
             print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
             books = ISBNSearch(item_isbn, item_collection)
             book = books[0]
-        else: 
+        else:
             item_isbn = int(request.form.get('isbn'))
             print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
             books = ISBNSearch(item_isbn, item_collection)
             book = books[0]
-        
-        
-        return render_template('checkout.html', book = book)
-    
+
+        return render_template('checkout.html', book=book)
+
     else:
-         flash('You must be logged in to checkout.', 'info')
-         return redirect(url_for('catalog'))
+        flash('You must be logged in to checkout.', 'info')
+        return redirect(url_for('catalog'))
 
 
 # this function actually checks out the book as user is logged in
@@ -154,15 +154,49 @@ def check():
     username = session['username']
     if collection == "Books":
         status = bookCheckout(isbn, username)
-        flash(status, "info")
-        
+        if status == "User has overdue items.":
+            flash(status, "info")
+        elif status == "Book unavailable":
+            # logic for redirecting to queue page
+            session["item_isbn"] = isbn
+            return redirect(url_for('waitlist'))
+        else:
+            flash(status, "info")
+
     elif collection == "Movies":
         status = movieCheckout(int(isbn), username)
-        flash(status, "info")
+        if status == "User has overdue items.":
+            flash(status, "info")
+        elif status == "Movie unavailable":
+            # logic for redirecting to queue page
+            return redirect(url_for('waitlist'))
+        else:
+            flash(status, "info")
 
     return redirect(url_for('catalog'))
-       
-    
+
+
+@app.route("/reservation", methods=('GET', 'POST'))
+def waitlist():
+    if "username" in session:
+        isbn = session['item_isbn']
+        if isbn is int:
+            item = ISBNSearch(isbn, "Movies")
+        else:
+            item = ISBNSearch(isbn, "Books")
+        item_title = item[0]["title"]
+        waittime = len(item[0]["reservation_queue"]) * 3 + 3
+        return render_template('reservation.html', item_isbn=isbn, item=item[0], waittime=str(waittime))
+
+
+@app.route("/reservation/joining", methods=('GET', 'POST'))
+def listjoin():
+    if "username" in session:
+        joinItemWaitlist(session['item_isbn'], session['username'])
+        flash("You have successfully joined the waitlist.", "info")
+    return redirect(url_for('catalog'))
+
+
 @app.route('/logout')
 def logout():
     session.pop('username', None)
@@ -177,6 +211,7 @@ def manage_employees():
         return render_template('manage_employees.html', users=users)
     else:
         return redirect(url_for('homepage'))
+
 
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():
@@ -199,9 +234,9 @@ def events(year=datetime.today().year, month=datetime.today().month, day=datetim
 @app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
-    selectedMonth = request.args.get("month",  type=int)
-    selectedDay = request.args.get("day",  type=int)
-    selectedPeriod = request.args.get("period",  type=int)
+    selectedMonth = request.args.get("month", type=int)
+    selectedDay = request.args.get("day", type=int)
+    selectedPeriod = request.args.get("period", type=int)
 
     # If period out of bounds (not 1-7), then redirect?
     # How????
@@ -216,16 +251,17 @@ def eventspecific(year=None, month=None, day=None, period=None):
 
     usertype = ""
     if 'usertype' in session:
-            if session['usertype'] == 'admin':
-                usertype = "admin"
-            elif session['usertype'] == 'employee':
-                usertype = "employee"
-            else:
-                usertype = "member"
+        if session['usertype'] == 'admin':
+            usertype = "admin"
+        elif session['usertype'] == 'employee':
+            usertype = "employee"
+        else:
+            usertype = "member"
     else:
         usertype = "unauthenticated"
 
-    return render_template("events.html", event=selectedEventDate, slotAvailable=isSlotAvailable(selectedEventDate), month=currDate.strftime("%B"), usertype=usertype)
+    return render_template("events.html", event=selectedEventDate, slotAvailable=isSlotAvailable(selectedEventDate),
+                           month=currDate.strftime("%B"), usertype=usertype)
 
 
 @app.route('/get-event-by-day', methods=['POST'])
@@ -234,8 +270,9 @@ def get_events_by_day():
     if request.method == "POST":
         data = request.get_json()
         events = getEventsByDate(f"{data['year']}-{data['month']}-{data['day']}")
-    
+
     return events
+
 
 # Returns the type of user in dict format
 # @app.route('/get-user-info', methods=["POST"])
@@ -256,9 +293,9 @@ def get_events_by_day():
 @app.route('/event-rsvp/', methods=['GET'])
 def event_rsvp(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
-    selectedMonth = request.args.get("month",  type=int)
-    selectedDay = request.args.get("day",  type=int)
-    selectedPeriod = request.args.get("period",  type=int)
+    selectedMonth = request.args.get("month", type=int)
+    selectedDay = request.args.get("day", type=int)
+    selectedPeriod = request.args.get("period", type=int)
     selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
     if 'usertype' in session:
         if not incrimentRSVP(selectedEventDate):
@@ -267,7 +304,8 @@ def event_rsvp(year=None, month=None, day=None, period=None):
             flash("RSVP addded", "info")
     else:
         flash("Must be logged in to RSVP events", "error")
-    return redirect(url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
+    return redirect(
+        url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
 
 
 @app.route('/events/create/')
@@ -279,9 +317,8 @@ def event_create():
     return redirect(url_for('login'))
 
 
+if __name__ == '__main__':  # DEVELOPMENT DEBUG MODE
+=======
 @app.errorhandler(404)
 def not_found(e):
     return render_template("not_found.html")
-
-if __name__ == '__main__': # DEVELOPMENT DEBUG MODE
-    app.run(debug=True)
