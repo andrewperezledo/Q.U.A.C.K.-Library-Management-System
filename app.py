@@ -317,8 +317,10 @@ def event_create():
     return redirect(url_for('login'))
 
 
-if __name__ == '__main__':  # DEVELOPMENT DEBUG MODE
-=======
 @app.errorhandler(404)
 def not_found(e):
     return render_template("not_found.html")
+
+
+if __name__ == '__main__':  # DEVELOPMENT DEBUG MODE
+    app.run(debug=True)
