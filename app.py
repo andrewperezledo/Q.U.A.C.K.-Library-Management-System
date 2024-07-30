@@ -246,8 +246,11 @@ def eventspecific(year=None, month=None, day=None, period=None):
     #     elif (selectedPeriod > 7):
     #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
 
-    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
-    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+    try:
+        selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+        currDate = datetime(selectedYear, selectedMonth, selectedDay)
+    except:
+        return render_template("not_found.html")
 
     usertype = ""
     if 'usertype' in session:
