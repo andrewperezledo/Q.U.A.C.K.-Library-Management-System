@@ -6,6 +6,14 @@ from DatabaseTools.databasekeys import cluster
 from DatabaseTools.userencryption import passwordDecrypt, passwordEncrypt
 
 
+# https://www.youtube.com/watch?v=rE_bJl2GAY8&pp=ygUVdGVjaCB3aXRoIHRpbSBweW1vbmdv
+# Tech With Tim on YouTube made this tutorial about MongoDB and Pymongo that really gave me everything I
+# needed to write all the base level database access functions, including how to set up the database online.
+
+
+# https://www.mongodb.com/resources/products/compatibilities/setting-up-flask-with-mongodb#:~:text=The%20MongoDB%20Atlas%20platform%20is,strong%20and%20scalable%20application%20stack.
+# Some general info on Pymongo and Flask together used.
+
 # db and collection are the parameters used to get to desired section of database
 # posts are the new items you are adding to the database
 # Duplicate _id items fail to add
@@ -85,6 +93,10 @@ def bookCheckout(isbn, username):
         updatePost("Userdata", "Users", "_id", username, "books", books)
 
     return "Book checked out"
+
+
+# https://stackoverflow.com/questions/31758329/create-date-in-python-without-time
+# Datetime help from here used for setting due dates and storing those in the database.
 
 
 def movieCheckout(id_number, username):
@@ -209,6 +221,9 @@ def joinItemWaitlist(isbn,username):
 
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which posts you will be deleting
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
 def deleteManyPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -242,6 +257,10 @@ def deletePost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which posts you are searching for
 # Returns empty vector if no results are found
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
+
 def findManyPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -263,6 +282,11 @@ def findManyPost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which post you are trying to find
 # Duplicate _id items fail to add
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
+
+
 def findPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -285,6 +309,8 @@ def findPost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # search_parameter and search_value filter which posts you will be updating
 # new_parameter and new_value are what you are updating
+
+
 def updateManyPost(db, collection, search_parameter, search_value, new_parameter, new_value):
     database = cluster[db]
     coll = database[collection]
@@ -298,6 +324,10 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
 # Example:
 # updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
 
+
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
 
 # db and collection are the parameters used to get to desired section of database
 # search_parameter and search_value filter which post you will be updating
