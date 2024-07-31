@@ -17,3 +17,7 @@ def passwordDecrypt(encryptedPassword):
     fernet = Fernet(encryptionKey)
 
     return fernet.decrypt(encryptedPassword).decode()
+
+
+# https://www.geeksforgeeks.org/how-to-encrypt-and-decrypt-strings-in-python/
+# This tutorial was followed when setting up password encryption.

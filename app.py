@@ -7,6 +7,9 @@ from DatabaseTools.databasekeys import session_secret_key
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
 # templates for the html & js inside html, static for CSS, JavaScript, & images
 
+# https://www.youtube.com/playlist?list=PLzMcBGfZo4-n4vJJybUVV3Un_NFS5EOgX
+# Flask tutorial by Tech With Tim on YouTube proved to be very insightful for out project
+
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
