@@ -29,7 +29,7 @@ def homepage():
             data = findPost("Userdata", "Users", "_id", username)
             return render_template('member.html', username=username, inventory=inventory,
                                    booklength=len(inventory[0]), movielength=len(inventory[1]),
-                                   waitlist=data["waitlist_items"], waitlistlength=len(data["waitlist_items"]))
+                                   reservations=data["reservations"], num_res=len(data["reservations"]))
     else:
         return render_template('homepage.html')
     # return render_template('homepage.html')
@@ -97,6 +97,8 @@ def login():
 
 
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
+
+# In here somewhere, change it so that members get routed to "reservation_page"
 @app.route("/catalog", methods=('GET', 'POST'))
 def catalog():
     if request.method == "POST":
@@ -162,7 +164,7 @@ def check():
         elif status == "Book unavailable":
             # logic for redirecting to queue page
             session["item_isbn"] = isbn
-            return redirect(url_for('waitlist'))
+            return redirect(url_for('reservation_page'))
         else:
             flash(status, "info")
 
@@ -172,7 +174,7 @@ def check():
             flash(status, "info")
         elif status == "Movie unavailable":
             # logic for redirecting to queue page
-            return redirect(url_for('waitlist'))
+            return redirect(url_for('reservation_page'))
         else:
             flash(status, "info")
 
@@ -180,7 +182,7 @@ def check():
 
 
 @app.route("/reservation", methods=('GET', 'POST'))
-def waitlist():
+def reservation_page():
     if "username" in session:
         isbn = session['item_isbn']
         if isbn is int:
@@ -195,8 +197,8 @@ def waitlist():
 @app.route("/reservation/joining", methods=('GET', 'POST'))
 def listjoin():
     if "username" in session:
-        joinItemWaitlist(session['item_isbn'], session['username'])
-        flash("You have successfully joined the waitlist.", "info")
+        reserveItem(session['item_isbn'], session['username'])
+        flash("Reservation successful.", "info")
     return redirect(url_for('catalog'))
 
 

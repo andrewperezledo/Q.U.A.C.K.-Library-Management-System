@@ -191,7 +191,6 @@ def movieReturn(title, username):
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
     data = findPost("Inventory", "Books", "_id", isbn)
-    #if data[""]
 
     return data["availability"]
 
@@ -215,6 +214,30 @@ def joinItemWaitlist(isbn,username):
         updatedwaitlist = user_data["waitlist_items"]
         updatedwaitlist.append(data)
         updatePost("Userdata","Users","_id",username,"waitlist_items",updatedwaitlist)
+
+
+def reserveItem(isbn, username):
+    if isbn < 100:
+        data = findPost("Inventory","Movies","_id", isbn)
+        newreserve = data["reserved_by"]
+        newreserve.append(username)
+        updatePost("Inventory","Movies","_id", isbn, "reserved_by", newreserve)
+        user_data = userSearch(username)
+        new_reserves = user_data["reservations"]
+        new_reserves.append(data)
+        updatePost("Userdata", "Users", "_id", username, "reservations", new_reserves)
+
+    else:
+        data = findPost("Inventory","Books","_id", isbn)
+        newreserve_book = data["reserved_by"]
+        newreserve_book.append(username)
+        updatePost("Inventory","Books","_id", isbn, "reserved_by", newreserve_book)
+        user_data = userSearch(username)
+        new_reserves = user_data["reservations"]
+        new_reserves.append(data)
+        updatePost("Userdata","Users","_id",username,"reservations",new_reserves)
+
+
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 

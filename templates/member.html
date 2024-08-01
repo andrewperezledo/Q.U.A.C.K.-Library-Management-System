@@ -70,10 +70,10 @@
                    </p>
                 {% endfor %}
             {% endif %}
-            {% if waitlistlength != 0 %}
-                <h5>Waitlist</h5>
-                {% for i in range(0,waitlistlength) %}
-                   <p>{{waitlist[i]["title"]}}</p>
+            {% if num_res != 0 %}
+                <h5>Reservations</h5>
+                {% for i in range(0,num_res) %}
+                   <p>{{reservations[i]["title"]}}</p>
                 {% endfor %}
             {% endif %}
         {% else %}
