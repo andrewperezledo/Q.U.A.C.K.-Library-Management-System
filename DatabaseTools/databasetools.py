@@ -217,7 +217,7 @@ def joinItemWaitlist(isbn,username):
 
 
 def reserveItem(isbn, username):
-    if isbn is int:
+    if isbn < 100:
         data = findPost("Inventory","Movies","_id", isbn)
         newreserve = data["reserved_by"]
         newreserve.append(username)
@@ -229,9 +229,9 @@ def reserveItem(isbn, username):
 
     else:
         data = findPost("Inventory","Books","_id", isbn)
-        newreserve = data["reserved_by"]
-        newreserve.append(username)
-        updatePost("Inventory","Books","_id", isbn, "reserved_by", username)
+        newreserve_book = data["reserved_by"]
+        newreserve_book.append(username)
+        updatePost("Inventory","Books","_id", isbn, "reserved_by", newreserve_book)
         user_data = userSearch(username)
         new_reserves = user_data["reservations"]
         new_reserves.append(data)
