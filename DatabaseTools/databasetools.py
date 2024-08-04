@@ -92,6 +92,14 @@ def bookCheckout(isbn, username):
         books.append(data)
         updatePost("Userdata", "Users", "_id", username, "books", books)
 
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
+
+
     return "Book checked out"
 
 
@@ -125,6 +133,13 @@ def movieCheckout(id_number, username):
         movies = user["movies"]
         movies.append(data)
         updatePost("Userdata", "Users", "_id", username, "movies", movies)
+
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
 
     return "Movie checked out"
 
@@ -437,6 +452,16 @@ def getAllBooks():
     for result in results:
         books.append(result)
     return books
+
+
+def getAllMovies():
+    database = cluster['Inventory']
+    coll = database['Movies']
+    movies = []
+    results = coll.find({})
+    for result in results:
+        movies.append(result)
+    return movies
 
 
 def bookSearch(title):
