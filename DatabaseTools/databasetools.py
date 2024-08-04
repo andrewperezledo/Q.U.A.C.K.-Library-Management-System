@@ -142,7 +142,7 @@ def bookReturn(isbn, username):
     if data is None:
         return "Book does not exist"
 
-    if data["copies_available"] == data["copies"]:
+    if data["copies_available"] == int(data["copies"]):
         return "Book already in-stock"
 
     updatePost("Inventory", "Books", "_id", isbn, "availability", True)
@@ -163,23 +163,23 @@ def bookReturn(isbn, username):
     return "Book returned"
 
 
-def movieReturn(title, username):
-    data = findPost("Inventory", "Movies", "title", title)
+def movieReturn(id, username):
+    data = findPost("Inventory", "Movies", "_id", id)
     if data is None:
         return "Movie does not exist"
 
-    if data["availability"]:
+    if data["copies_available"] == int(data["copies"]):
         return "Movie already in-stock"
 
-    updatePost("Inventory", "Movies", "title", title, "availability", True)
-    updatePost("Inventory", "Movies", "title", title, "due_date", "none")
-    updatePost("Inventory", "Movies", "title", title, "copies_available", data["copies_available"] + 1)
+    updatePost("Inventory", "Movies", "_id", id, "availability", True)
+    updatePost("Inventory", "Movies", "_id", id, "due_date", "none")
+    updatePost("Inventory", "Movies", "_id", id, "copies_available", data["copies_available"] + 1)
     # Remove movie from user profile
     user = userSearch(username)
     new_inventory = user["movies"]
     count = 0
     for movie in new_inventory:
-        if movie["title"] == title:
+        if movie["_id"] == id:
             new_inventory.pop(count)
             break
         count += 1
@@ -218,12 +218,12 @@ def joinItemWaitlist(isbn,username):
 
 def reserveItem(isbn, username):
     if int(isbn) < 100:
-        data = findPost("Inventory","Movies","_id", isbn)
+        data = findPost("Inventory","Movies","_id", int(isbn))
         if len(data["reserved_by"]) == int(data["copies"]):
             return "No copies available"
         newreserve = data["reserved_by"]
         newreserve.append(username)
-        updatePost("Inventory","Movies","_id", isbn, "reserved_by", newreserve)
+        updatePost("Inventory","Movies","_id", int(isbn), "reserved_by", newreserve)
         user_data = userSearch(username)
         new_reserves = user_data["reservations"]
         new_reserves.append(data)

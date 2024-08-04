@@ -82,7 +82,8 @@ QUACK Catalog
 <div class = book-table>
     <tr> 
         <td style="max-width: 300px;">{{books[i]["title"]}}<br>
-            ISBN: {{books[i]["_id"]}}
+            ISBN: {{books[i]["_id"]}}<br>
+            Location: {{books[i]["location"]}}
 
         </td> 
         <td class="desc">
@@ -101,7 +102,7 @@ QUACK Catalog
         <td class="Genre"style="max-width: 100px;">{{books[i]['genre']}}</td>
         <td class="Publisher" style="max-width: 200px;">{{books[i]['publisher']}}</td>
         <td class="Availability">{{books[i]['availability']}}</td>
-        <td class="Copies">{{books[i]['copies']}}</td>
+        <td class="Copies">{{books[i]['copies_available']}}</td>
         <td class="Version">{{books[i]['version']}}</td>
 
         <td class="checkout_button">
@@ -110,11 +111,27 @@ QUACK Catalog
             {% else %}
                 {% set medium = "Movies" %}       
             {% endif %}
-            <form action="/checkout" method="POST">
-                <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
-                <input type="hidden" name="type" value="{{medium}}">
-                <button id="home_button" type="submit">Checkout</button>
-            </form>
+            {% if session['usertype']: %}
+                {% if session['usertype'] != "member" %}
+                    <form action="/checkout" method="POST">
+                        <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                        <input type="hidden" name="type" value="{{medium}}">
+                        <button id="home_button" type="submit">Checkout or Return</button>
+                    </form>
+                    <form action="/404" method="POST">
+                        <button id="home_button" type="submit" style="margin-top: 5px;">Edit</button>
+                    </form>
+                    
+                {% else: %}
+
+                    <form action="/reservation" method="POST">
+                        <input type="hidden" name="item_id" value="{{books[i]['_id']}}">
+                        <input type="hidden" name="medium" value="{{medium}}">
+                        <button id="home_button" type="submit">Reserve</button>
+                    </form>
+                {% endif %}
+
+            {% endif %}
         </td> 
     </tr>    
 </div>     
@@ -147,6 +164,7 @@ QUACK Catalog
                 Audience Score: {{books[i]['audience_score']}}<br> 
                 Rotten Tomatoe Score: {{books[i]['rotten_score']}}<br> 
                 Availability: {{books[i]['availability']}}<br> 
+                Copies: {{books[i]['copies_available']}}
                 </p>
                 <div class="cover">
                     <div  z-index: 0 style="text-align: center;">Image Not Available</div>
@@ -161,11 +179,26 @@ QUACK Catalog
             {% else %}
                 {% set medium = "Movies" %}       
             {% endif %}
-            <form action="/checkout" method="POST">
-                <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
-                <input type="hidden" name="type" value="{{medium}}">
-                <button id="home_button" type="submit">Checkout</button>
-            </form>
+            {% if session['usertype']: %}
+            {% if session['usertype'] != "member" %}
+                <form action="/checkout" method="POST">
+                    <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                    <input type="hidden" name="type" value="{{medium}}">
+                    <button id="home_button" type="submit">Checkout or Return</button>
+                </form>
+                <form action="/404" method="POST">
+                    <button id="home_button" type="submit" style="margin-top: 5px;">Edit</button>
+                </form>
+            {% else: %}
+
+                <form action="/reservation" method="POST">
+                    <input type="hidden" name="item_id" value="{{books[i]['_id']}}">
+                    <input type="hidden" name="medium" value="{{medium}}">
+                    <button id="home_button" type="submit">Reserve</button>
+                </form>
+            {% endif %}
+
+        {% endif %}
         </td> 
     </tr>    
 </div>     
