@@ -364,15 +364,74 @@ def logout():
     session.pop('usertype', None)
     return redirect(url_for('homepage'))
 
-
-@app.route('/admin/manage-employees')
+# Changes here too
+@app.route('/admin/manage-employees', methods=['GET', 'POST'])
 def manage_employees():
     if 'usertype' in session and session['usertype'] == 'admin':
-        users = getAllUsers()  # You'll need to create this function in databasetools.py
+        if request.method == 'POST':
+            action = request.form.get('action')
+
+            if action == 'add':
+                username = request.form['username']
+                password = request.form['password']
+                usertype = request.form['usertype']
+                result = admin_create_user(username, password, usertype)
+                if result == "success":
+                    flash('User added successfully', 'success')
+                else:
+                    flash('Failed to add user', 'error')
+
+            elif action == 'update':
+                username = request.form['username']
+                new_role = request.form['new_role']
+                if updateUserRole(username, new_role):
+                    flash('User role updated successfully', 'success')
+                else:
+                    flash('Failed to update user role', 'error')
+
+            elif action == 'delete':
+                username = request.form['username']
+                if admin_delete_user(username):
+                    flash('User deleted successfully', 'success')
+                else:
+                    flash('Failed to delete user', 'error')
+
+            return redirect(url_for('manage_employees'))
+
+        users = getAllUsers()
         return render_template('manage_employees.html', users=users)
     else:
         return redirect(url_for('homepage'))
 
+# More new griffin code
+@app.route('/employee/manage-members', methods=['GET', 'POST'])
+def manage_members():
+    if 'usertype' in session and session['usertype'] in ['employee', 'admin']:
+        if request.method == 'POST':
+            action = request.form.get('action')
+
+            if action == 'add':
+                username = request.form['username']
+                password = request.form['password']
+                result = admin_create_user(username, password, 'member')
+                if result == "success":
+                    flash('Member added successfully', 'success')
+                else:
+                    flash('Failed to add member', 'error')
+
+            elif action == 'delete':
+                username = request.form['username']
+                if admin_delete_user(username):
+                    flash('Member deleted successfully', 'success')
+                else:
+                    flash('Failed to delete member', 'error')
+
+            return redirect(url_for('manage_members'))
+
+        members = [user for user in getAllUsers() if user['usertype'] == 'member']
+        return render_template('manage_members.html', members=members)
+    else:
+        return redirect(url_for('homepage'))
 
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():

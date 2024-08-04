@@ -1,42 +1,115 @@
 {% extends "base.html" %}
-{% block title %} QUACK Manage Employees {% endblock %}
-{% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/manage-employee.css')}}"/>
-{% endblock %}
-
+{% block title %}QUACK Manage Employees and Members{% endblock %}
 {% block content %}
+
 <div class="manage-employees-container">
-    <h2>Manage Employees</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+                {% for msg in messages %}
+                    <p>{{msg}}</p>
+                {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h2>Manage Employees and Members</h2>
+
+    <div class="action-buttons">
+        <button class="update-button" onclick="showForm('addUserForm')">Add User</button>
+        <button class="update-button" onclick="showForm('deleteUserForm')">Delete User</button>
+    </div>
+
+    <div id="addUserForm" style="display: none;">
+        <h3>Add New User</h3>
+        <form action="{{ url_for('manage_employees') }}" method="post">
+            <input type="hidden" name="action" value="add">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <select name="usertype" class="role-select">
+                <option value="member">Member</option>
+                <option value="employee">Employee</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit" class="update-button">Add User</button>
+        </form>
+    </div>
+
+    <div id="deleteUserForm" style="display: none;">
+        <h3>Delete User</h3>
+        <form action="{{ url_for('manage_employees') }}" method="post">
+            <input type="hidden" name="action" value="delete">
+            <input type="text" name="username" placeholder="Username" required>
+            <button type="submit" class="update-button">Delete User</button>
+        </form>
+    </div>
+
+    <h3>Employees</h3>
     <table class="user-table">
         <thead>
             <tr>
                 <th>Username</th>
                 <th>Current Role</th>
                 <th>Change Role</th>
-                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
+                {% if user.usertype in ['employee', 'admin'] %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.usertype }}</td>
+                        <td>
+                            <form action="{{ url_for('update_user_role') }}" method="post">
+                                <input type="hidden" name="username" value="{{ user.username }}">
+                                <select name="new_role" class="role-select">
+                                    <option value="employee" {% if user.usertype == 'employee' %}selected{% endif %}>Employee</option>
+                                    <option value="admin" {% if user.usertype == 'admin' %}selected{% endif %}>Admin</option>
+                                </select>
+                                <button type="submit" class="update-button">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Members</h3>
+    <table class="user-table">
+        <thead>
             <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.usertype }}</td>
-                <td>
-                    <form action="{{ url_for('update_user_role') }}" method="POST">
-                        <input type="hidden" name="username" value="{{ user.username }}">
-                        <select name="new_role" class="role-select">
-                            <option value="member" {% if user.usertype == 'member' %}selected{% endif %}>Member</option>
-                            <option value="employee" {% if user.usertype == 'employee' %}selected{% endif %}>Employee</option>
-                            <option value="admin" {% if user.usertype == 'admin' %}selected{% endif %}>Admin</option>
-                        </select>
-                </td>
-                <td>
-                        <button type="submit" class="update-button">Update Role</button>
-                    </form>
-                </td>
+                <th>Username</th>
+                <th>Current Role</th>
+                <th>Change Role</th>
             </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% if user.usertype == 'member' %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.usertype }}</td>
+                        <td>
+                            <form action="{{ url_for('update_user_role') }}" method="post">
+                                <input type="hidden" name="username" value="{{ user.username }}">
+                                <select name="new_role" class="role-select">
+                                    <option value="member" selected>Member</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                                <button type="submit" class="update-button">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+function showForm(formId) {
+    document.getElementById('addUserForm').style.display = 'none';
+    document.getElementById('deleteUserForm').style.display = 'none';
+    document.getElementById(formId).style.display = 'block';
+}
+</script>
+
 {% endblock %}

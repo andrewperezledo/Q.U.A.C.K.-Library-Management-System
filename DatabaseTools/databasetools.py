@@ -548,3 +548,13 @@ def checkUserOverdue(username):
         if movie["due_date"] < present:
             overdue_items.append(movie)
     return overdue_items
+
+# Griffins changes he sent in discord
+def admin_create_user(username, password, usertype):
+    return userCreation(username, password, usertype)
+
+def admin_delete_user(username):
+    database = cluster['Userdata']
+    coll = database['Users']
+    result = coll.delete_one({"_id": username})
+    return result.deleted_count > 0
