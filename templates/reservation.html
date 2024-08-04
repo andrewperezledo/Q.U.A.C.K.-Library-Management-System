@@ -18,13 +18,13 @@ Reservation Management
             <div class="reservations">
 
                 <p>
-                    Would you like to join the waitlist for this item?<br>
+                    Would you like to reserve this item?<br>
                     Title: {{item["title"]}}
                 </p>
-                <p>The item will be available in roughly {{waittime}} days.</p>
-
-
-                <button id="home_button" onclick="location.href='/reservation/joining'" type="submit">Join Waitlist</button>
+                <form action="/reservation/joining" method="POST">
+                    <input type="hidden" name="item_id" value="{{item_id}}">
+                    <button id="home_button" type="submit">Join Waitlist</button>
+                </form>
             </div>
         </section>
     </main>

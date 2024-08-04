@@ -36,10 +36,17 @@ QUACK Catalog
                 <form action="/check" method="POST">
                     <input type="hidden" name="isbn" value="{{book['_id']}}">
                     <input type="hidden" name="type" value="{{request.form['type']}}">
+                    <input type="text" name="username" placeholder="Username for checkout">
                     <button type="submit">Checkout</button>
                 </form>
+                <form action="/return" method="POST">
+                    <input type="hidden" name="isbn" value="{{book['_id']}}">
+                    <input type="hidden" name="type" value="{{request.form['type']}}">
+                    <input type="text" name="username" placeholder="Username for return">
+                    <button type="submit" style="margin-top: 5px;">Return</button>
+                </form>
                 <!--  ><button onclick="location.href='check'">Checkout</button>-->
-                <button onclick="location.href='/catalog'">Cancel</button>
+                <button onclick="location.href='/catalog'" style="margin-top: 5px;">Cancel</button>
                 {% with messages = get_flashed_messages() %}
                         {% if messages %}
                                 {% for msg in messages %}

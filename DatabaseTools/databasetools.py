@@ -6,6 +6,14 @@ from DatabaseTools.databasekeys import cluster
 from DatabaseTools.userencryption import passwordDecrypt, passwordEncrypt
 
 
+# https://www.youtube.com/watch?v=rE_bJl2GAY8&pp=ygUVdGVjaCB3aXRoIHRpbSBweW1vbmdv
+# Tech With Tim on YouTube made this tutorial about MongoDB and Pymongo that really gave me everything I
+# needed to write all the base level database access functions, including how to set up the database online.
+
+
+# https://www.mongodb.com/resources/products/compatibilities/setting-up-flask-with-mongodb#:~:text=The%20MongoDB%20Atlas%20platform%20is,strong%20and%20scalable%20application%20stack.
+# Some general info on Pymongo and Flask together used.
+
 # db and collection are the parameters used to get to desired section of database
 # posts are the new items you are adding to the database
 # Duplicate _id items fail to add
@@ -87,6 +95,10 @@ def bookCheckout(isbn, username):
     return "Book checked out"
 
 
+# https://stackoverflow.com/questions/31758329/create-date-in-python-without-time
+# Datetime help from here used for setting due dates and storing those in the database.
+
+
 def movieCheckout(id_number, username):
     data = findPost("Inventory", "Movies", "_id", id_number)
     if data is None:
@@ -130,7 +142,7 @@ def bookReturn(isbn, username):
     if data is None:
         return "Book does not exist"
 
-    if data["copies_available"] == data["copies"]:
+    if data["copies_available"] == int(data["copies"]):
         return "Book already in-stock"
 
     updatePost("Inventory", "Books", "_id", isbn, "availability", True)
@@ -151,23 +163,23 @@ def bookReturn(isbn, username):
     return "Book returned"
 
 
-def movieReturn(title, username):
-    data = findPost("Inventory", "Movies", "title", title)
+def movieReturn(id, username):
+    data = findPost("Inventory", "Movies", "_id", id)
     if data is None:
         return "Movie does not exist"
 
-    if data["availability"]:
+    if data["copies_available"] == int(data["copies"]):
         return "Movie already in-stock"
 
-    updatePost("Inventory", "Movies", "title", title, "availability", True)
-    updatePost("Inventory", "Movies", "title", title, "due_date", "none")
-    updatePost("Inventory", "Movies", "title", title, "copies_available", data["copies_available"] + 1)
+    updatePost("Inventory", "Movies", "_id", id, "availability", True)
+    updatePost("Inventory", "Movies", "_id", id, "due_date", "none")
+    updatePost("Inventory", "Movies", "_id", id, "copies_available", data["copies_available"] + 1)
     # Remove movie from user profile
     user = userSearch(username)
     new_inventory = user["movies"]
     count = 0
     for movie in new_inventory:
-        if movie["title"] == title:
+        if movie["_id"] == id:
             new_inventory.pop(count)
             break
         count += 1
@@ -179,7 +191,6 @@ def movieReturn(title, username):
 # function is designed to check item availability by title
 def checkBookAvailability(isbn):
     data = findPost("Inventory", "Books", "_id", isbn)
-    #if data[""]
 
     return data["availability"]
 
@@ -203,12 +214,43 @@ def joinItemWaitlist(isbn,username):
         updatedwaitlist = user_data["waitlist_items"]
         updatedwaitlist.append(data)
         updatePost("Userdata","Users","_id",username,"waitlist_items",updatedwaitlist)
+
+
+def reserveItem(isbn, username):
+    if int(isbn) < 100:
+        data = findPost("Inventory","Movies","_id", int(isbn))
+        if len(data["reserved_by"]) == int(data["copies"]):
+            return "No copies available"
+        newreserve = data["reserved_by"]
+        newreserve.append(username)
+        updatePost("Inventory","Movies","_id", int(isbn), "reserved_by", newreserve)
+        user_data = userSearch(username)
+        new_reserves = user_data["reservations"]
+        new_reserves.append(data)
+        updatePost("Userdata", "Users", "_id", username, "reservations", new_reserves)
+
+    else:
+        data = findPost("Inventory","Books","_id", isbn)
+        if len(data["reserved_by"]) == int(data["copies"]):
+            return "No copies available"
+        newreserve_book = data["reserved_by"]
+        newreserve_book.append(username)
+        updatePost("Inventory","Books","_id", isbn, "reserved_by", newreserve_book)
+        user_data = userSearch(username)
+        new_reserves = user_data["reservations"]
+        new_reserves.append(data)
+        updatePost("Userdata","Users","_id",username,"reservations",new_reserves)
+
+
 # Example:
 # checkBookAvailability("Harry Potter and the Order of the Phoenix")
 
 
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which posts you will be deleting
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
 def deleteManyPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -242,6 +284,10 @@ def deletePost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which posts you are searching for
 # Returns empty vector if no results are found
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
+
 def findManyPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -263,6 +309,11 @@ def findManyPost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # parameter and value filter which post you are trying to find
 # Duplicate _id items fail to add
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
+
+
 def findPost(db, collection, parameter, value):
     database = cluster[db]
     coll = database[collection]
@@ -285,6 +336,8 @@ def findPost(db, collection, parameter, value):
 # db and collection are the parameters used to get to desired section of database
 # search_parameter and search_value filter which posts you will be updating
 # new_parameter and new_value are what you are updating
+
+
 def updateManyPost(db, collection, search_parameter, search_value, new_parameter, new_value):
     database = cluster[db]
     coll = database[collection]
@@ -298,6 +351,10 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
 # Example:
 # updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
 
+
+
+# Try except borrowed:
+# https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
 
 # db and collection are the parameters used to get to desired section of database
 # search_parameter and search_value filter which post you will be updating

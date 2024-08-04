@@ -7,6 +7,9 @@ from DatabaseTools.databasekeys import session_secret_key
 # to run mutiple apps, use -p like this: flask run -p 5001 *******to change port 
 # templates for the html & js inside html, static for CSS, JavaScript, & images
 
+# https://www.youtube.com/playlist?list=PLzMcBGfZo4-n4vJJybUVV3Un_NFS5EOgX
+# Flask tutorial by Tech With Tim on YouTube proved to be very insightful for out project
+
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
@@ -26,7 +29,7 @@ def homepage():
             data = findPost("Userdata", "Users", "_id", username)
             return render_template('member.html', username=username, inventory=inventory,
                                    booklength=len(inventory[0]), movielength=len(inventory[1]),
-                                   waitlist=data["waitlist_items"], waitlistlength=len(data["waitlist_items"]))
+                                   reservations=data["reservations"], num_res=len(data["reservations"]))
     else:
         return render_template('homepage.html')
     # return render_template('homepage.html')
@@ -94,6 +97,8 @@ def login():
 
 
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
+
+# In here somewhere, change it so that members get routed to "reservation_page"
 @app.route("/catalog", methods=('GET', 'POST'))
 def catalog():
     if request.method == "POST":
@@ -149,51 +154,133 @@ def check():
     if request.method == "POST":
         isbn = request.form['isbn']
         collection = request.form['type']
-        print(f"isbn: {isbn}, collection: {collection} **************")
+        username = request.form['username']
+    user = userSearch(username)
 
-    username = session['username']
-    if collection == "Books":
-        status = bookCheckout(isbn, username)
-        if status == "User has overdue items.":
-            flash(status, "info")
-        elif status == "Book unavailable":
-            # logic for redirecting to queue page
-            session["item_isbn"] = isbn
-            return redirect(url_for('waitlist'))
-        else:
-            flash(status, "info")
+    
+    
+    
+    if user:
+        if collection == "Books":
+            items = ISBNSearch(isbn, collection)
+            item = items[0]
 
-    elif collection == "Movies":
-        status = movieCheckout(int(isbn), username)
-        if status == "User has overdue items.":
-            flash(status, "info")
-        elif status == "Movie unavailable":
-            # logic for redirecting to queue page
-            return redirect(url_for('waitlist'))
-        else:
-            flash(status, "info")
+            if item['reserved_by']:
+                if item['reserved_by'][0] != username:
+                    message = f"Item reserved by '{item['reserved_by'][0]}'"
+                    flash(message, 'info')
+                    return redirect(url_for('catalog'))
+                else:
+                    #update user reservations 
+                    user = userSearch(username)
+                    user_reservations = user['reservations']
+                    user_new_reservations = user_reservations[1:]
+                    updatePost("Userdata", "Users", "_id", username, "reservations", user_new_reservations)
+                    #update item reservation
+                    reserved_by = item['reserved_by']
+                    new_reserved_by = reserved_by[1:]
+                    updatePost("Inventory", "Books", "_id", isbn, "reserved_by", new_reserved_by)
 
+
+                
+            status = bookCheckout(isbn, username)
+            if status == "User has overdue items.":
+                flash(status, "info")
+            elif status == "Book unavailable":
+                # logic for redirecting to queue page
+                flash(status, "info")
+                #session["item_isbn"] = isbn
+                #return redirect(url_for('reservation_page'))
+
+            else:
+                flash(status, "info")
+
+        elif collection == "Movies":
+            items = ISBNSearch(int(isbn), collection)
+            item = items[0]
+
+            if item['reserved_by']:
+                if item['reserved_by'][0] != username:
+                    message = f"Item reserved by '{item['reserved_by'][0]}'"
+                    flash(message, 'info')
+                    return redirect(url_for('catalog'))
+                else:
+                    #update user reservations 
+                    user = userSearch(username)
+                    user_reservations = user['reservations']
+                    user_new_reservations = user_reservations[1:]
+                    updatePost("Userdata", "Users", "_id", username, "reservations", user_new_reservations)
+                    #update item reservation
+                    reserved_by = item['reserved_by']
+                    new_reserved_by = reserved_by[1:]
+                    updatePost("Inventory", "Movies", "_id", int(isbn), "reserved_by", new_reserved_by)
+                
+            status = movieCheckout(int(isbn), username)
+            if status == "User has overdue items.":
+                flash(status, "info")
+            elif status == "Movie unavailable":
+                # logic for redirecting to queue page
+                flash(status, 'info')
+            else:
+                flash(status, "info")
+    else:
+        flash("User Does Not Exist.", 'info')
+        
     return redirect(url_for('catalog'))
 
 
-@app.route("/reservation", methods=('GET', 'POST'))
-def waitlist():
+@app.route("/return", methods=('GET', 'POST'))
+def item_return():
     if "username" in session:
-        isbn = session['item_isbn']
+        if request.method == "POST":
+            isbn = request.form['isbn']
+            collection = request.form['type']
+            username = request.form['username']
+        try:
+            if collection == "Books":
+                    status = bookReturn(isbn, username)
+                    flash(status, 'info')
+            else:
+                status = movieReturn(int(isbn), username)
+                flash(status, 'info')
+        except:
+            flash('Return Failed', 'info')
+        return redirect(url_for('catalog'))
+
+
+@app.route("/reservation", methods=('GET', 'POST'))
+def reservation_page():
+    if "username" in session:
+        '''isbn = session['item_isbn']
         if isbn is int:
             item = ISBNSearch(isbn, "Movies")
         else:
             item = ISBNSearch(isbn, "Books")
-        item_title = item[0]["title"]
-        waittime = len(item[0]["reservation_queue"]) * 3 + 3
-        return render_template('reservation.html', item_isbn=isbn, item=item[0], waittime=str(waittime))
+        item_title = item[0]["title"]'''
+        if request.method == "POST":
+            item_id = request.form.get('item_id')
+            item_medium = request.form.get('medium')
+            print(f"ID: {item_id}  Medium: {item_medium} ***************************************")
+            if item_medium == "Books":
+                items =  ISBNSearch(item_id, str(item_medium))
+            else:
+                items =  ISBNSearch(int(item_id), str(item_medium))
+            
+            item = items[0]
+            
+        waittime = len(item["reserved_by"]) * 3 + 3
+        return render_template('reservation.html', item_id=item['_id'], item=item, waittime=str(waittime))
 
 
 @app.route("/reservation/joining", methods=('GET', 'POST'))
 def listjoin():
     if "username" in session:
-        joinItemWaitlist(session['item_isbn'], session['username'])
-        flash("You have successfully joined the waitlist.", "info")
+        if request.method == 'POST':
+            item_id = request.form.get('item_id')
+            reserveItem(item_id, session['username'])
+            flash("Reservation successful.", "info")
+    else:
+        flash("Reservation failed.", "info")
     return redirect(url_for('catalog'))
 
 

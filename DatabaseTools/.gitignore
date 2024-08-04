@@ -3,3 +3,5 @@ __pycache__/
 *$py.class
 
 /databasekeys.py
+/books.csv
+/movies.csv
