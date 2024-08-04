@@ -66,7 +66,7 @@
                 <h5>Movies</h5>
                 {% for i in range(0,movielength) %}
                    <p>{{inventory[1][i]["title"]}}<br>
-                       Due: {{inventory[0][1]["due_date"].date()}}
+                       Due: {{inventory[1][i]["due_date"].date()}}
                    </p>
                 {% endfor %}
             {% endif %}
