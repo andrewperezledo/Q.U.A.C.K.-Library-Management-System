@@ -110,13 +110,30 @@ def catalog():
         if medium == "Movies" and parameter not in ["title", "release_year", "genre"]:
             flash("You can only search movies by Title or Year.", "info")
             return redirect(url_for('catalog'))
+        if parameter != "new_items":
+            flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
+            searched_items = generalSearch(parameter, search_text, medium)
 
-        flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
-        searched_items = generalSearch(parameter, search_text, medium)
-
-        if len(searched_items) == 0:
-            flash("Your search did not match any items.", "info")
-            #return redirect(url_for('catalog'))
+            if len(searched_items) == 0:
+                flash("Your search did not match any items.", "info")
+                #return redirect(url_for('catalog'))
+        else:
+            data = userSearch(session["username"])
+            history = data["history"]
+            items = {}
+            if medium == "Movies":
+                items = getAllMovies()
+            else:
+                items = getAllBooks()
+            for item in items:
+                newItem = True
+                for history_item in history:
+                    if item["title"] == history_item:
+                        print("MATCH")
+                        newItem = False
+                if newItem:
+                    searched_items.append(item)
+            flash(f"You searched for {medium} you have not checked out before.")
 
         return render_template("catalog.html", len=len(searched_items), books=searched_items)
 
