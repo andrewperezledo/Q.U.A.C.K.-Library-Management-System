@@ -13,7 +13,6 @@ from DatabaseTools.databasekeys import session_secret_key
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
-
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
     username = request.args.get('username')
@@ -336,8 +335,16 @@ def eventspecific(year=None, month=None, day=None, period=None):
     try:
         selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
         currDate = datetime(selectedYear, selectedMonth, selectedDay)
+        if selectedPeriod < 1 or selectedPeriod > 7:
+            raise Exception("Period out of bounds")
     except:
         return render_template("not_found.html")
+
+    # Easy passing of dates for create event
+    session["year"] = selectedYear
+    session["month"] = selectedMonth
+    session["day"] = selectedDay
+    session["period"] = selectedPeriod
 
     usertype = ""
     if 'usertype' in session:
@@ -398,11 +405,21 @@ def event_rsvp(year=None, month=None, day=None, period=None):
         url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
 
 
-@app.route('/events/create/')
+@app.route('/events/create/', methods=['GET','POST'])
 def event_create():
+    selectedYear=''
+    selectedMonth=''
+    selectedDay=''
+    selectedPeriod=''
+    if "year" in session:
+        selectedYear = session["year"]
+        selectedMonth = session["month"]
+        selectedDay = session["day"]
+        selectedPeriod = session["period"]
     if 'usertype' in session:
         if session['usertype'] == "admin" or session['usertype'] == "employee":
-            return render_template("create_event.html")
+            return render_template("create_event.html", selectedYear=selectedYear, selectedMonth=selectedMonth,
+                                   selectedDay=selectedDay, selectedPeriod=selectedPeriod, usertype=session["usertype"])
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
 

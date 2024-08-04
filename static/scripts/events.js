@@ -134,8 +134,6 @@ const renderEventInfo = (period) => {
     eventInfoTag.innerHTML = EvTag;
 }
 
-sessionStorage.setItem("usertype", "admin");
-
 function eventSelected(period) {
     window.location.replace(`/events/e=?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${parseInt(period)}`);
 }
