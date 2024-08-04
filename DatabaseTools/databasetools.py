@@ -405,7 +405,8 @@ def userCreation(username, password, usertype):
     for character in username:
         if character in banned_characters:
             return "Please enter valid username or password."
-    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": []}
+    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": [],
+            "movies" : [], "reservations" : [], "history" : []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
         return "Matching Username"
