@@ -148,6 +148,85 @@ def checkout():
         return redirect(url_for('catalog'))
 
 
+@app.route("/manageinventory", methods=('GET', 'POST'))
+def manage_inventory():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            item_collection = str(request.form.get('type'))
+            if item_collection == "Books":
+                item_isbn = str(request.form.get('isbn'))
+                print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
+                books = ISBNSearch(item_isbn, item_collection)
+                book = books[0]
+            else:
+                item_isbn = int(request.form.get('isbn'))
+                print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: movies")
+                books = ISBNSearch(item_isbn, item_collection)
+                book = books[0]
+
+            return render_template('edit_inventory.html', book=book)
+    return redirect(url_for('homepage'))
+
+
+@app.route("/updatinginventory", methods=('GET', 'POST'))
+def inventory_updating():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            field = request.form.get('new_field')
+            value = request.form.get('new_value')
+            item_collection = str(request.form.get('type'))
+            if item_collection == "Books":
+                item_isbn = str(request.form.get('isbn'))
+                if field == "DELETE":
+                    deletePost("Inventory", item_collection,"_id",item_isbn)
+                    return redirect(url_for('catalog'))
+                updatePost("Inventory", "Books",
+                           "_id", item_isbn,
+                           field, value)
+            else:
+                item_isbn = int(request.form.get('isbn'))
+                if field == "DELETE":
+                    deletePost("Inventory", item_collection,"_id",item_isbn)
+                    return redirect(url_for('catalog'))
+                updatePost("Inventory", "Movies",
+                           "_id", item_isbn,
+                           field, value)
+    return redirect(url_for('catalog'))
+
+@app.route("/create-item", methods=('GET', 'POST'))
+def item_creation():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            return render_template('create_item.html')
+    return redirect(url_for('/create-item'))
+
+@app.route("/creating-item", methods=('GET', 'POST'))
+def inprogress_item_creation():
+    if request.form.get('type') == "Book":
+        post = {'_id':request.form.get('isbn'),'title': str(request.form.get('title')),
+                'author': str(request.form.get('author')), 'release_year': str(request.form.get('release_year')),
+                'publisher': str(request.form.get('publisher')), 'cover_img': str(request.form.get('cover_img')),
+                'availability': True, 'due_date': 'none', 'copies': '1',
+                'description': str(request.form.get('description')), 'genre': str(request.form.get('genre')),
+                'location': str(request.form.get('location')), 'version': '1', 'copies_available': 1,
+                'reserved_by': []}
+        addPost("Inventory","Books",post)
+    else:
+        db = cluster["Inventory"]
+        coll = db["Movies"]
+        index = coll.count_documents({})
+        post = {'_id': int(index + 1), 'title': str(request.form.get('title')),
+                'genre': str(request.form.get('genre')),
+                'release_year': str(request.form.get('release_year')),
+                'audience_score': "N/A", 'rotten_score': "N/A",
+                'gross' : "N/A",
+                'availability': True, 'reserved_by': [],
+                'copies': '1', 'copies_available': 1,
+                'due_date': 'none'
+                }
+        coll.insert_one(post)
+    return redirect(url_for('homepage'))
+
 # this function actually checks out the book as user is logged in
 @app.route("/check", methods=('GET', 'POST'))
 def check():
@@ -157,9 +236,6 @@ def check():
         username = request.form['username']
     user = userSearch(username)
 
-    
-    
-    
     if user:
         if collection == "Books":
             items = ISBNSearch(isbn, collection)
@@ -181,8 +257,6 @@ def check():
                     new_reserved_by = reserved_by[1:]
                     updatePost("Inventory", "Books", "_id", isbn, "reserved_by", new_reserved_by)
 
-
-                
             status = bookCheckout(isbn, username)
             if status == "User has overdue items.":
                 flash(status, "info")
@@ -214,7 +288,7 @@ def check():
                     reserved_by = item['reserved_by']
                     new_reserved_by = reserved_by[1:]
                     updatePost("Inventory", "Movies", "_id", int(isbn), "reserved_by", new_reserved_by)
-                
+
             status = movieCheckout(int(isbn), username)
             if status == "User has overdue items.":
                 flash(status, "info")
@@ -225,7 +299,7 @@ def check():
                 flash(status, "info")
     else:
         flash("User Does Not Exist.", 'info')
-        
+
     return redirect(url_for('catalog'))
 
 
@@ -238,8 +312,8 @@ def item_return():
             username = request.form['username']
         try:
             if collection == "Books":
-                    status = bookReturn(isbn, username)
-                    flash(status, 'info')
+                status = bookReturn(isbn, username)
+                flash(status, 'info')
             else:
                 status = movieReturn(int(isbn), username)
                 flash(status, 'info')
@@ -262,12 +336,12 @@ def reservation_page():
             item_medium = request.form.get('medium')
             print(f"ID: {item_id}  Medium: {item_medium} ***************************************")
             if item_medium == "Books":
-                items =  ISBNSearch(item_id, str(item_medium))
+                items = ISBNSearch(item_id, str(item_medium))
             else:
-                items =  ISBNSearch(int(item_id), str(item_medium))
-            
+                items = ISBNSearch(int(item_id), str(item_medium))
+
             item = items[0]
-            
+
         waittime = len(item["reserved_by"]) * 3 + 3
         return render_template('reservation.html', item_id=item['_id'], item=item, waittime=str(waittime))
 

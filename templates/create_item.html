@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}
+QUACK Catalog
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
+{% endblock %}
+
+{% block content %}
+
+
+    <section class="title">
+        <h2>Create New Item</h2>
+    </section>
+<main>
+
+    <section class="welcome-section">
+        <h3>Please enter the information that matches the field.</h3>
+            <div class="checkout-buttons">
+                <form action="/creating-item" method="POST">
+                    <input type="text" name="type" placeholder="Type (Book or Movie)"><br>
+                    <input type="text" name="isbn" placeholder="ISBN/ID"><br>
+                    <input type="text" name="title" placeholder="Title"><br>
+                    <input type="text" name="author" placeholder="Author"><br>
+                    <input type="text" name="release_year" placeholder="Release Year"><br>
+                    <input type="text" name="cover_img" placeholder="Cover Image Link"><br>
+                    <input type="text" name="genre" placeholder="Genre"><br>
+                    <input type="text" name="description" placeholder="Description"><br>
+                    <input type="text" name="location" placeholder="Location"><br>
+                    <button type="submit">Enter</button>
+                </form>
+                <button onclick="location.href='/catalog'" style="margin-top: 5px;">Cancel</button>
+                {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                                {% for msg in messages %}
+                                    <p>{{msg}}</p>
+                                {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+            </div>
+
+    </section>
+</main>
+
+
+
+{% endblock %}
