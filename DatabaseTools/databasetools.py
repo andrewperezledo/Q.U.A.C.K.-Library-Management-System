@@ -383,12 +383,28 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
         print("Post updated.")
     except:
         print("Update failed.")
-
-
 # Example:
 # updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
 # updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
 # updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
+
+
+# Transfers old post to new post, but _id changes
+def changePostid(db, collection, old_id, new_id):
+    try:
+        post = findPost(db, collection, "_id", old_id)
+        if post:
+            new_post = post
+            new_post["_id"] = new_id
+            deletePost(db, collection, "_id", old_id)
+            addPost(db, collection, new_post)
+            return True
+        else:
+            print("No post to migrate")
+            return False
+    except:
+        print("Transfer failed.")
+        return False
 
 
 # username is the username, must be unique
@@ -477,14 +493,14 @@ def bookSearch(title):
 
 # This is the same as book search, except you can fill choose what category to search
 # and value is the search key you are looking for
-def generalSearch(category, value, type):
-    database = cluster['Inventory']
+def generalSearch(clust, type, category, value):
+    database = cluster[clust]
     coll = database[type]
-    books = []
+    items = []
     results = coll.find({category: {"$regex": value}})
     for result in results:
-        books.append(result)
-    return books
+        items.append(result)
+    return items
 
 
 def getAllUsers():

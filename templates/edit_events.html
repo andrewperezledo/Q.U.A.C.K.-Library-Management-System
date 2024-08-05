@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}
+QUACK Event Management
+{% endblock %}
+
+{% block styles %}
+<style>
+th:tr{ 
+text-align: center;
+} 
+tr:nth-of-type(2n){ 
+border: 2px solid black; 
+background-color:rgb(240, 248, 255); 
+font-weight: 600;
+} 
+td{ 
+background-color:rgba(240, 248, 255, 0.596);
+padding: 8px 8px; 
+border: 2px solid black;
+text-align: center;
+font-weight: 600;
+}
+#title {
+background-color: rgba(255, 255, 255, 0.8);
+border-radius: 15px;
+text-align: center;
+padding: 10px;
+}
+._button{
+    padding: 10px 10px;
+    width: 90%;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 550;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 5px;
+    /* width: 200px; */
+    text-align: center;
+    /* Makeshift for proper center */
+}
+.edit{
+    background-color: #3498db;
+    color: white;
+}
+.delete{
+    background-color: #e74c3c;
+    color: white;
+}
+.edit:hover{
+    background-color: #2980b9;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+.delete:hover{
+    background-color: #c0392b;
+}
+</style>
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
+{% endblock %}
+
+{% block scripts %}
+<!-- https://stackoverflow.com/questions/26250256/changing-inner-html-of-div-depending-on-selected-dropdown-option -->
+<script defer>
+    function myFunction() {
+        var ele = document.getElementById("selectBox");
+        var selectedValue = ele.options[ele.selectedIndex].value;
+
+        var y = document.getElementById("text");
+        yTag = '';
+        if(selectedValue=="_id"){
+            yTag = `<input id="inputbox" type="date" name="date" value="{{ selectedDate }}" required></input>
+                    <input id="inputbox" type="number" name="period" value="{{ selectedPeriod }}" min="1" max="7" required></input>`;
+        }
+        else if(selectedValue=="approved"){
+            if (`{{ event["approved"] }}` == "True")
+                yTag = `<select name="value">
+                <option value="true">True</option>
+                <option value="false">False</option>
+                </select>`;
+            else
+                yTag = `<select name="value">
+                    <option value="false">False</option>
+                    <option value="true">True</option>
+                    </select>`;
+        }
+        else if(selectedValue=="attendees"){
+            yTag = `<input type="number" name="value" value="{{ event["attendees"] }}" min="0" required></input>`;
+        }
+        else if(selectedValue=="title"){
+            yTag = `<input type="text" name="value" value="{{ event["title"] }}" required></input>`;
+        }
+        else if(selectedValue=="desc"){
+            yTag = `<textarea style="width:500px;" rows="3" cols="25" name="value" required>{{ event["desc"] }}</textarea>`;
+        }
+        else if(selectedValue=="contact"){
+            yTag = `<input type="text" name="value" value="{{ event["contact"] }}" required></input>`;
+        }
+        else if(selectedValue=="splash"){
+            yTag = `<textarea style="width:500px;" rows="5" cols="25" name="value" required>{{ event["splash"] }}</textarea>`;
+        }
+        else if(selectedValue=="user"){
+            yTag = `<input type="text" name="value" value="{{ event["user"] }}" required></input>`;
+        }
+        yTag += `<br><br><a ><button id="home_button" type="submit">Update Event</button></a>`;
+        y.innerHTML = yTag;
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<main>
+    <section class="welcome-section">
+        <h2 style="text-align: center;">Select attribute to edit for event on {{ event["_id"] }}:</h2>
+        <form  method="post">
+            <select name="key" id="selectBox" onchange="return myFunction();">
+                <!-- Date should affect time in backend -->
+                <option disabled selected value> select an attribute </option>
+                <option value="_id">Date</option>
+                <option value="approved">Approved</option>
+                <option value="attendees">Attendees</option>
+                <option value="title">Title</option>
+                <option value="desc">Description</option>
+                <option value="contact">Contact Info</option>
+                <option value="splash">Splash Link</option>
+                <option value="user">Assigned User</option>
+            </select>
+            <br><br>
+            <div id="text"></div>
+        </form>
+    </section>
+</main>
+{% endblock %}
