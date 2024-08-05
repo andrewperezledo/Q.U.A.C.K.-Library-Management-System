@@ -111,7 +111,7 @@ def catalog():
             return redirect(url_for('catalog'))
         if parameter != "new_items":
             flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
-            searched_items = generalSearch(parameter, search_text, medium)
+            searched_items = generalSearch("Inventory", medium, parameter, search_text)
 
             if len(searched_items) == 0:
                 flash("Your search did not match any items.", "info")
@@ -570,7 +570,76 @@ def event_create():
     return redirect(url_for('login'))
 
 
+@app.route('/events/manage/', methods=['GET', 'POST'])
+def event_manage():
+    if 'usertype' not in session or session['usertype'] == "member":
+        flash("Must be library staff member to manage events", "error")
+        return redirect(url_for('login'))
+
+    events = []
+    events.extend(findManyPost("Events", "Events", "approved", False))
+    events.extend(findManyPost("Events", "Events", "approved", True))
+
+    return render_template("manage_events.html", events=events, num_events = len(events))
+
+
+
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+@app.route('/events/manage/edit/', methods=['GET', 'POST'])
+def event_edit():
+    if request.method == 'POST':
+        if request.form.get("edit"):
+            # For the purpose of passing in date of event selected
+            date = request.form.get("edit").split('-')
+
+            session["year"] = int(date[0])
+            session["month"] = int(date[1])
+            session["day"] = int(date[2])
+            session["period"] = int(date[3])
+            session["event"] = f"{session["year"]}-{session["month"]}-{session["day"]}-{session["period"]}"
+
+            selectedDate = f"{session["year"]}-{session["month"]:02d}-{session["day"]:02d}"
+            currDate = datetime.now().strftime("%Y-%m-%d")
+
+
+            return render_template("edit_events.html", event=findPost("Events", "Events", "_id", f"{request.form.get("edit")}"),
+                                   selectedDate=selectedDate, selectedPeriod=session["period"], currDate=currDate)
+        else:
+            if request.form.get("date"):
+                date = request.form.get("date")
+                date = date.split('-')
+
+                if findPost("Events", "Events", "_id", f"{int(date[0])}-{int(date[1])}-{int(date[2])}-{request.form.get("period")}"):
+                    flash("Time slot already occupied", "error")
+                    redirect(url_for("event_manage"))
+                else:
+                    new_id = f"{int(date[0])}-{int(date[1])}-{int(date[2])}-{request.form.get("period")}"
+                    changePostid("Events", "Events", session["event"], new_id)
+                    updatePost("Events", "Events", "_id", new_id, "time",
+                            time_slots[request.form.get("period", type=int) - 1])
+            else:
+                # To sustain boolean approved status
+                new_val = request.form.get("value")
+                if new_val == "true":
+                    new_val = True
+                elif new_val == "false":
+                    new_val == False
+
+                updatePost("Events", "Events", "_id", session["event"], f"{request.form.get("key")}", new_val)
+
+    flash("Event successfully updated")
+    return redirect(url_for("event_manage"))
+
+
+@app.route('/events/manage/delete/', methods=['GET', 'POST'])
+def event_delete():
+    if request.method == 'POST':
+        deletePost("Events", "Events", "_id", f"{request.form.get("delete")}")
+    return redirect(url_for("event_manage"))
+
+
 @app.errorhandler(404)
+@app.errorhandler(405)
 def not_found(e):
     return render_template("not_found.html")
 
