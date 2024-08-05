@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}
+QUACK Catalog
+{% endblock %}
+
+{% block styles %}
+<style>
+#logout_button {
+    padding: 12px 24px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    width: 200px;
+    }
+
+    #logout_button:hover {
+        background-color: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
+
+{% endblock %}
+
+{% block content %}
+
+
+    <section class="title">
+        <h2>Editing "{{book['title']}}"</h2>
+    </section>
+<main>
+    <section class = "welcome-section">
+            <p style="text-align: left;">
+                {% for item in book %}
+                    {% if item != 'cover_img'%}
+                        {{item}} : {{book[item]}}<br>
+                    {% endif %}
+                {% endfor %}
+            </p>
+    </section>
+    <section class="welcome-section">
+        <h3>Please enter information you wish to update.</h3>
+            <div class="checkout-buttons">
+                <form action="/updatinginventory" method="POST">
+                    <input type="hidden" name="isbn" value="{{book['_id']}}">
+                    <input type="hidden" name="type" value="{{request.form['type']}}">
+                    <input type="text" name="new_field" placeholder="Field (as listed)">
+                    <input type="text" name="new_value" placeholder="New value">
+                <!--  ><button onclick="location.href='check'">Checkout</button>-->
+                    <button type="submit">Enter</button>
+                </form>
+                <button onclick="location.href='/catalog'" style="margin-top: 5px;">Cancel</button>
+                {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                                {% for msg in messages %}
+                                    <p>{{msg}}</p>
+                                {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+            </div>
+            
+    </section>
+    <section class="welcome-section">
+        <h3>Delete Item</h3>
+            <p>This button will completely remove this item from the inventory.</p>
+            <div class="checkout-buttons">
+                <form action="/updatinginventory" method="POST">
+                    <input type="hidden" name="isbn" value="{{book['_id']}}">
+                    <input type="hidden" name="type" value="{{request.form['type']}}">
+                    <input type="hidden" name="new_field" value="DELETE">
+                    <input type="hidden" name="new_value" value = "Blank">
+                <!--  ><button onclick="location.href='check'">Checkout</button>-->
+                    <button id="logout_button" type="submit">DELETE</button>
+                </form>
+            </div>
+
+    </section>
+</main>
+
+
+
+{% endblock %}

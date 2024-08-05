@@ -92,6 +92,14 @@ def bookCheckout(isbn, username):
         books.append(data)
         updatePost("Userdata", "Users", "_id", username, "books", books)
 
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
+
+
     return "Book checked out"
 
 
@@ -125,6 +133,13 @@ def movieCheckout(id_number, username):
         movies = user["movies"]
         movies.append(data)
         updatePost("Userdata", "Users", "_id", username, "movies", movies)
+
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
 
     return "Movie checked out"
 
@@ -390,7 +405,8 @@ def userCreation(username, password, usertype):
     for character in username:
         if character in banned_characters:
             return "Please enter valid username or password."
-    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": []}
+    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": [],
+            "movies" : [], "reservations" : [], "history" : []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
         return "Matching Username"
@@ -439,6 +455,16 @@ def getAllBooks():
     return books
 
 
+def getAllMovies():
+    database = cluster['Inventory']
+    coll = database['Movies']
+    movies = []
+    results = coll.find({})
+    for result in results:
+        movies.append(result)
+    return movies
+
+
 def bookSearch(title):
     database = cluster['Inventory']
     coll = database['Books']
@@ -478,10 +504,11 @@ def updateUserRole(username, new_role):
 time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
 
 # Remove status? Perhaps check time and change status only when event is loaded in?
-# When is yyyy-mm-dd-pp, where pp is a period 01-10.
-def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
-    period = time_slots[int(when[len(when)-1])-1]
-    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendees": attendees}
+# When is yyyy-mm-dd-pp, where pp is a period 1-7.
+def eventCreation(when, period, title, desc, contact='', splash='', assigned_user='admin', attendees=0, approved=False):
+    when2 = f"{int(when[0:4])}-{int(when[5:7])}-{int(when[8:])}-{period}"
+    prd = time_slots[int(period)-1]
+    post = {"_id": when2, "approved": approved, "user": assigned_user, "title": title, "desc": desc, "time": prd, "contact": contact, "splash": splash, "attendees": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
@@ -548,3 +575,13 @@ def checkUserOverdue(username):
         if movie["due_date"] < present:
             overdue_items.append(movie)
     return overdue_items
+
+# Griffins changes he sent in discord
+def admin_create_user(username, password, usertype):
+    return userCreation(username, password, usertype)
+
+def admin_delete_user(username):
+    database = cluster['Userdata']
+    coll = database['Users']
+    result = coll.delete_one({"_id": username})
+    return result.deleted_count > 0

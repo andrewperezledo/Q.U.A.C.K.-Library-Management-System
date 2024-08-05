@@ -30,6 +30,7 @@ QUACK Catalog
             <option value="author">Author</option>
             <option value="release_year">Year</option>
             <option value="publisher">Publisher</option>
+            <option value="new_items">New Item</option>
             
         </select>
     
@@ -118,7 +119,9 @@ QUACK Catalog
                         <input type="hidden" name="type" value="{{medium}}">
                         <button id="home_button" type="submit">Checkout or Return</button>
                     </form>
-                    <form action="/404" method="POST">
+                    <form action="/manageinventory" method="POST">
+                        <input type="hidden" name="isbn" value="{{books[i]['_id']}}">
+                        <input type="hidden" name="type" value="{{medium}}">
                         <button id="home_button" type="submit" style="margin-top: 5px;">Edit</button>
                     </form>
                     

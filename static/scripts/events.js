@@ -119,22 +119,24 @@ const renderEventInfo = (period) => {
     let EvTag = "";
     var i = period-1;
     if ("approved" in events[i] && events[i]["approved"] == true) {
+        var img = '';
+        if ("splash" in events[i] && events[i]["splash"] != false) {
+            img = `<img id="image" src="${events[i]["splash"]}"  height="210px;" width="570px;">`
+        }
         EvTag += `
         <h2>${events[i]["title"]}</h2>
-        <h2>Image w/ border here :)</h2>
+        ${img}
         <!-- https://stackoverflow.com/questions/14096292/how-to-have-two-headings-on-the-same-line-in-html -->
         <div style="clear: both;">
             <h4 style="float: left;">${events[i]["time"]}</h4>
             <h4 style="float: right;">Contact for Info: ${events[i]["contact"]}</h4>
         </div>
-        <br>
-        <h5 style="float: left">${events[i]["desc"]}</h5>
+        <br><br>
+        <h5 style="float: center">${events[i]["desc"]}</h5>
         `;
     }
     eventInfoTag.innerHTML = EvTag;
 }
-
-sessionStorage.setItem("usertype", "admin");
 
 function eventSelected(period) {
     window.location.replace(`/events/e=?year=${selectedYear}&month=${selectedMonth + 1}&day=${selectedDate}&period=${parseInt(period)}`);

@@ -13,7 +13,6 @@ from DatabaseTools.databasekeys import session_secret_key
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
-
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
     username = request.args.get('username')
@@ -110,13 +109,30 @@ def catalog():
         if medium == "Movies" and parameter not in ["title", "release_year", "genre"]:
             flash("You can only search movies by Title or Year.", "info")
             return redirect(url_for('catalog'))
+        if parameter != "new_items":
+            flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
+            searched_items = generalSearch(parameter, search_text, medium)
 
-        flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
-        searched_items = generalSearch(parameter, search_text, medium)
-
-        if len(searched_items) == 0:
-            flash("Your search did not match any items.", "info")
-            #return redirect(url_for('catalog'))
+            if len(searched_items) == 0:
+                flash("Your search did not match any items.", "info")
+                #return redirect(url_for('catalog'))
+        else:
+            data = userSearch(session["username"])
+            history = data["history"]
+            items = {}
+            if medium == "Movies":
+                items = getAllMovies()
+            else:
+                items = getAllBooks()
+            for item in items:
+                newItem = True
+                for history_item in history:
+                    if item["title"] == history_item:
+                        print("MATCH")
+                        newItem = False
+                if newItem:
+                    searched_items.append(item)
+            flash(f"You searched for {medium} you have not checked out before.")
 
         return render_template("catalog.html", len=len(searched_items), books=searched_items)
 
@@ -148,6 +164,85 @@ def checkout():
         return redirect(url_for('catalog'))
 
 
+@app.route("/manageinventory", methods=('GET', 'POST'))
+def manage_inventory():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            item_collection = str(request.form.get('type'))
+            if item_collection == "Books":
+                item_isbn = str(request.form.get('isbn'))
+                print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: books")
+                books = ISBNSearch(item_isbn, item_collection)
+                book = books[0]
+            else:
+                item_isbn = int(request.form.get('isbn'))
+                print(f"ISBN: {item_isbn}, Collection: {item_collection}, Results: movies")
+                books = ISBNSearch(item_isbn, item_collection)
+                book = books[0]
+
+            return render_template('edit_inventory.html', book=book)
+    return redirect(url_for('homepage'))
+
+
+@app.route("/updatinginventory", methods=('GET', 'POST'))
+def inventory_updating():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            field = request.form.get('new_field')
+            value = request.form.get('new_value')
+            item_collection = str(request.form.get('type'))
+            if item_collection == "Books":
+                item_isbn = str(request.form.get('isbn'))
+                if field == "DELETE":
+                    deletePost("Inventory", item_collection,"_id",item_isbn)
+                    return redirect(url_for('catalog'))
+                updatePost("Inventory", "Books",
+                           "_id", item_isbn,
+                           field, value)
+            else:
+                item_isbn = int(request.form.get('isbn'))
+                if field == "DELETE":
+                    deletePost("Inventory", item_collection,"_id",item_isbn)
+                    return redirect(url_for('catalog'))
+                updatePost("Inventory", "Movies",
+                           "_id", item_isbn,
+                           field, value)
+    return redirect(url_for('catalog'))
+
+@app.route("/create-item", methods=('GET', 'POST'))
+def item_creation():
+    if 'username' in session:
+        if session["usertype"] != "member":
+            return render_template('create_item.html')
+    return redirect(url_for('/create-item'))
+
+@app.route("/creating-item", methods=('GET', 'POST'))
+def inprogress_item_creation():
+    if request.form.get('type') == "Book":
+        post = {'_id':request.form.get('isbn'),'title': str(request.form.get('title')),
+                'author': str(request.form.get('author')), 'release_year': str(request.form.get('release_year')),
+                'publisher': str(request.form.get('publisher')), 'cover_img': str(request.form.get('cover_img')),
+                'availability': True, 'due_date': 'none', 'copies': '1',
+                'description': str(request.form.get('description')), 'genre': str(request.form.get('genre')),
+                'location': str(request.form.get('location')), 'version': '1', 'copies_available': 1,
+                'reserved_by': []}
+        addPost("Inventory","Books",post)
+    else:
+        db = cluster["Inventory"]
+        coll = db["Movies"]
+        index = coll.count_documents({})
+        post = {'_id': int(index + 1), 'title': str(request.form.get('title')),
+                'genre': str(request.form.get('genre')),
+                'release_year': str(request.form.get('release_year')),
+                'audience_score': "N/A", 'rotten_score': "N/A",
+                'gross' : "N/A",
+                'availability': True, 'reserved_by': [],
+                'copies': '1', 'copies_available': 1,
+                'due_date': 'none'
+                }
+        coll.insert_one(post)
+    return redirect(url_for('homepage'))
+
 # this function actually checks out the book as user is logged in
 @app.route("/check", methods=('GET', 'POST'))
 def check():
@@ -157,9 +252,6 @@ def check():
         username = request.form['username']
     user = userSearch(username)
 
-    
-    
-    
     if user:
         if collection == "Books":
             items = ISBNSearch(isbn, collection)
@@ -181,8 +273,6 @@ def check():
                     new_reserved_by = reserved_by[1:]
                     updatePost("Inventory", "Books", "_id", isbn, "reserved_by", new_reserved_by)
 
-
-                
             status = bookCheckout(isbn, username)
             if status == "User has overdue items.":
                 flash(status, "info")
@@ -214,7 +304,7 @@ def check():
                     reserved_by = item['reserved_by']
                     new_reserved_by = reserved_by[1:]
                     updatePost("Inventory", "Movies", "_id", int(isbn), "reserved_by", new_reserved_by)
-                
+
             status = movieCheckout(int(isbn), username)
             if status == "User has overdue items.":
                 flash(status, "info")
@@ -225,7 +315,7 @@ def check():
                 flash(status, "info")
     else:
         flash("User Does Not Exist.", 'info')
-        
+
     return redirect(url_for('catalog'))
 
 
@@ -238,8 +328,8 @@ def item_return():
             username = request.form['username']
         try:
             if collection == "Books":
-                    status = bookReturn(isbn, username)
-                    flash(status, 'info')
+                status = bookReturn(isbn, username)
+                flash(status, 'info')
             else:
                 status = movieReturn(int(isbn), username)
                 flash(status, 'info')
@@ -262,12 +352,12 @@ def reservation_page():
             item_medium = request.form.get('medium')
             print(f"ID: {item_id}  Medium: {item_medium} ***************************************")
             if item_medium == "Books":
-                items =  ISBNSearch(item_id, str(item_medium))
+                items = ISBNSearch(item_id, str(item_medium))
             else:
-                items =  ISBNSearch(int(item_id), str(item_medium))
-            
+                items = ISBNSearch(int(item_id), str(item_medium))
+
             item = items[0]
-            
+
         waittime = len(item["reserved_by"]) * 3 + 3
         return render_template('reservation.html', item_id=item['_id'], item=item, waittime=str(waittime))
 
@@ -290,15 +380,74 @@ def logout():
     session.pop('usertype', None)
     return redirect(url_for('homepage'))
 
-
-@app.route('/admin/manage-employees')
+# Changes here too
+@app.route('/admin/manage-employees', methods=['GET', 'POST'])
 def manage_employees():
     if 'usertype' in session and session['usertype'] == 'admin':
-        users = getAllUsers()  # You'll need to create this function in databasetools.py
+        if request.method == 'POST':
+            action = request.form.get('action')
+
+            if action == 'add':
+                username = request.form['username']
+                password = request.form['password']
+                usertype = request.form['usertype']
+                result = admin_create_user(username, password, usertype)
+                if result == "success":
+                    flash('User added successfully', 'success')
+                else:
+                    flash('Failed to add user', 'error')
+
+            elif action == 'update':
+                username = request.form['username']
+                new_role = request.form['new_role']
+                if updateUserRole(username, new_role):
+                    flash('User role updated successfully', 'success')
+                else:
+                    flash('Failed to update user role', 'error')
+
+            elif action == 'delete':
+                username = request.form['username']
+                if admin_delete_user(username):
+                    flash('User deleted successfully', 'success')
+                else:
+                    flash('Failed to delete user', 'error')
+
+            return redirect(url_for('manage_employees'))
+
+        users = getAllUsers()
         return render_template('manage_employees.html', users=users)
     else:
         return redirect(url_for('homepage'))
 
+# More new griffin code
+@app.route('/employee/manage-members', methods=['GET', 'POST'])
+def manage_members():
+    if 'usertype' in session and session['usertype'] in ['employee', 'admin']:
+        if request.method == 'POST':
+            action = request.form.get('action')
+
+            if action == 'add':
+                username = request.form['username']
+                password = request.form['password']
+                result = admin_create_user(username, password, 'member')
+                if result == "success":
+                    flash('Member added successfully', 'success')
+                else:
+                    flash('Failed to add member', 'error')
+
+            elif action == 'delete':
+                username = request.form['username']
+                if admin_delete_user(username):
+                    flash('Member deleted successfully', 'success')
+                else:
+                    flash('Failed to delete member', 'error')
+
+            return redirect(url_for('manage_members'))
+
+        members = [user for user in getAllUsers() if user['usertype'] == 'member']
+        return render_template('manage_members.html', members=members)
+    else:
+        return redirect(url_for('homepage'))
 
 @app.route('/admin/update-user-role', methods=['POST'])
 def update_user_role():
@@ -313,11 +462,9 @@ def update_user_role():
 
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
-    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 
-# year=<year>&month=<month>&day=<day>&period=<period>
 @app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -325,16 +472,19 @@ def eventspecific(year=None, month=None, day=None, period=None):
     selectedDay = request.args.get("day", type=int)
     selectedPeriod = request.args.get("period", type=int)
 
-    # If period out of bounds (not 1-7), then redirect?
-    # How????
-    # if (selectedPeriod is not None):
-    #     if (selectedPeriod < 1):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=1))
-    #     elif (selectedPeriod > 7):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
+    try:
+        selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+        currDate = datetime(selectedYear, selectedMonth, selectedDay)
+        if selectedPeriod < 1 or selectedPeriod > 7:
+            raise Exception("Period out of bounds")
+    except:
+        return render_template("not_found.html")
 
-    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
-    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+    # Easy passing of dates for create event
+    session["year"] = selectedYear
+    session["month"] = selectedMonth
+    session["day"] = selectedDay
+    session["period"] = selectedPeriod
 
     usertype = ""
     if 'usertype' in session:
@@ -361,22 +511,6 @@ def get_events_by_day():
     return events
 
 
-# Returns the type of user in dict format
-# @app.route('/get-user-info', methods=["POST"])
-# def get_user_info():
-#     user_info = {}
-#     if request.method == "POST":
-#         if 'usertype' in session:
-#             if session['usertype'] == 'admin':
-#                 user_info = {"user_type": "admin"}
-#             elif session['usertype'] == 'employee':
-#                 user_info = {"user_type": "employee"}
-#             else:
-#                 user_info = {"user_type": "member"}
-#         else:
-#             user_info = {"user_type": "unauthenticated"}
-#     return user_info
-
 @app.route('/event-rsvp/', methods=['GET'])
 def event_rsvp(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -395,11 +529,43 @@ def event_rsvp(year=None, month=None, day=None, period=None):
         url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
 
 
-@app.route('/events/create/')
+@app.route('/events/create/', methods=['GET','POST'])
 def event_create():
+    if request.method == 'POST':
+        date = request.form.get("date")
+        period = request.form.get("period")
+        title = request.form.get("title")
+        desc = request.form.get("desc")
+        contact = request.form.get("contact")
+        splash = request.form.get("splash")
+        user = request.form.get("user")
+        approved = True if request.form.get("approved") else False
+
+        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approved)
+        if status == "Time Slot Taken":
+            flash("Time slot already pending approval", "error")
+        elif status == "fail":
+            flash("Something when wrong, try again later", "error")
+        else:
+            flash("Event successfully added")
+
+    selectedYear=''
+    selectedMonth=''
+    selectedDay=''
+    selectedPeriod=''
+    selectedDate = datetime.now().strftime("%Y-%m-%d")
+    currDate = datetime.now().strftime("%Y-%m-%d")
+
+    if "year" in session:
+        selectedYear = session["year"]
+        selectedMonth = session["month"]
+        selectedDay = session["day"]
+        selectedPeriod = session["period"]
+        selectedDate = f"{selectedYear}-{int(selectedMonth):02d}-{int(selectedDay):02d}"
     if 'usertype' in session:
         if session['usertype'] == "admin" or session['usertype'] == "employee":
-            return render_template("create_event.html")
+            return render_template("create_event.html", selectedDate=selectedDate, selectedPeriod=selectedPeriod,
+                currDate=currDate, usertype=session["usertype"])
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
 
