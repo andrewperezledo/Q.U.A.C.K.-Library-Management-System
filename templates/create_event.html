@@ -1,9 +1,95 @@
+<!-- Used for help for textbox https://stackoverflow.com/questions/21506276/how-do-i-make-the-text-box-bigger-in-html-css#:~:text=If%20you%20want%20to%20make,%3E%20). -->
 {% extends "base.html" %}
 {% block title %}
 QUACK Event Creation
 {% endblock %}
 
 {% block styles %}
+<style>
+h3 {
+color: #2c3e50;
+font-size: 1.4em;
+margin-bottom: 5px;
+text-align: left;
+}
+label {
+color: #2c3e50;
+font-size: 1.4em;
+margin-bottom: 5px;
+text-align: left;
+}
+#inputbox
+{
+    margin-bottom: 5px;
+    /* font-size:14pt; */
+}
+/* #textbox
+{
+    width: 100%;
+    height:70px;
+} */
+</style>
+<!-- <style>
+.form__group {
+  position: relative;
+  padding: 15px 0 0;
+  margin-top: 5x;
+  width: 47.5%;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 47.5%;
+  border: 0;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 1rem;
+  color: #000000;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: transparent;
+  }
+
+  &:placeholder-shown ~ .form__label {
+    font-size: 1.15rem;
+    cursor: text;
+    top: 25px;
+  }
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #9b9b9b;
+}
+
+.form__field:focus {
+  ~ .form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight:700;    
+  }
+  padding-bottom: 6px;  
+  font-weight: 100;
+  border-width: 3px;
+  border-image: linear-gradient(to right,#004756, #1086f4);
+  border-image-slice: 1;
+}
+/* reset input */
+.form__field{
+  &:required,&:invalid { box-shadow:none; }
+}
+</style> -->
 {% endblock %}
 
 {% block link %}
@@ -16,22 +102,82 @@ QUACK Event Creation
 {% block content %}
 <main>
     <section class="welcome-section">
-        <h2>Create Event</h2>
+        <h2 style="margin-bottom: 10px; text-align: center;">Create Event</h2>
         <div class="create-user-form">  
             <form method="POST">
+
+                <h3>Date & Period</h3>
                 <div display="flex;" justify-content="space-around;">
-                        <h4>Date: </h4>
-                        <input type="text" name="content_username"
-                            placeholder="Year" value="{{ selectedYear }}"></input>
-                        <input type="text" name="content_password"
-                            placeholder="Month" value="{{ selectedMonth }}"></input>
-                        <input type="text" name="content_username"
-                            placeholder="Day" value="{{ selectedDay }}"></input>
-                        <input type="text" name="content_password"
-                            placeholder="Period (1-7)" value="{{ selectedPeriod }}"></input>
+                    <input id="inputbox" type="date" name="date" value="{{ selectedDate }}" min="{{ currDate }}" required></input>
+                    <input id="inputbox" type="number" name="period" value="{{ selectedPeriod }}" min="1" max="7" required></input>
                 </div>
-                <button id="home_button" type="submit">Create</button>
+
+                <!-- <div display="flex;" justify-content="space-around;">
+                        <input id="inputbox" type="text" name="year"
+                            placeholder="Year (e.g. 2024)" value="{{ selectedYear }}"></input>
+                        <input id="inputbox" type="text" name="month"
+                            placeholder="Month (number)" value="{{ selectedMonth }}"></input>
+                        <input id="inputbox" type="text" name="day"
+                            placeholder="Day (number)" value="{{ selectedDay }}"></input>
+                        <input id="inputbox" type="text" name="period"
+                            placeholder="Period (1-7)" value="{{ selectedPeriod }}"></input>
+                            <div class="form__group field">
+                                <input type="text" class="form__field" placeholder="Year" name="year" id='year' required />
+                                <label for="name" class="form__label">Year</label>
+                            </div>
+                            <div class="form__group field">
+                                <input type="input" class="form__field" placeholder="Month" name="month" id='month' required />
+                                <label for="name" class="form__label">Month</label>
+                            </div>
+                            <div class="form__group field">
+                                <input type="input" class="form__field" placeholder="Day" name="day" id='day' required />
+                                <label for="name" class="form__label">Day</label>
+                            </div>
+                            <div class="form__group field">
+                                <input type="input" class="form__field" placeholder="Period" name="period" id='period' required />
+                                <label for="name" class="form__label">Period</label>
+                            </div>
+                </div> -->
+                <div style="clear: both;">
+                    <h3 style="float: left;">Title</h3>
+                    <h3 style="float: right;">Contact Information (of reservee)</h3>
+                </div>
+                <div style="clear: both;">
+                    <input style="float: left;" id="inputbox" type="text" name="title"
+                        placeholder="Title" required></input>
+                    <input style="float: right;" id="inputbox" type="text" name="contact"
+                        placeholder="Contact Info" required></input>
+                </div>
+
+                <br><br>
+                <h3>Description</h3>
+                <textarea style="width:100%;" rows="3" cols="25" name="desc" placeholder="Short and sweet description. No more than 1 chapter."
+                required></textarea>
+
+                <div style="clear: both;">
+                    <h3 style="float: left;">Image Link</h3>
+                    <h3 style="float: right;">User Assignment</h3>
+                </div>
+                <div style="clear: both;">
+                    <input style="float: left;" id="inputbox" type="text" name="splash"
+                        placeholder="Image Link"></input>
+                    <input style="float: right;" id="inputbox" type="text" name="user"
+                        placeholder="Username" required></input>
+                </div>
+                <br><br>
+
+                {% if usertype == "admin" %}
+                    <label for="options">Approval Status:</label>
+                    <select name="approval">
+                        <option value="">False</option>
+                        <option value="true_mode">True</option>
+                    </select>
+                {% endif %}
+                
+                <br><br>
+                <button style="display:block; margin:auto" id="home_button" type="submit">Create</button>
             </form>
+            <br>
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for cat, msg in messages %}

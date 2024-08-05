@@ -127,8 +127,8 @@ const renderEventInfo = (period) => {
             <h4 style="float: left;">${events[i]["time"]}</h4>
             <h4 style="float: right;">Contact for Info: ${events[i]["contact"]}</h4>
         </div>
-        <br>
-        <h5 style="float: left">${events[i]["desc"]}</h5>
+        <br><br>
+        <h5 style="float: center">${events[i]["desc"]}</h5>
         `;
     }
     eventInfoTag.innerHTML = EvTag;

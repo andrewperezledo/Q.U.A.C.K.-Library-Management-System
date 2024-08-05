@@ -407,19 +407,42 @@ def event_rsvp(year=None, month=None, day=None, period=None):
 
 @app.route('/events/create/', methods=['GET','POST'])
 def event_create():
+    if request.method == 'POST':
+        date = request.form.get("date")
+        period = request.form.get("period")
+        title = request.form.get("title")
+        desc = request.form.get("desc")
+        contact = request.form.get("contact")
+        splash = request.form.get("splash")
+        user = request.form.get("user")
+        approval = True if request.form.get("approval") else False
+
+        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approval)
+        if status == "Time Slot Taken":
+            flash("Time slot already pending approval", "error")
+        elif status == "fail":
+            flash("Something when wrong, try again later", "error")
+        else:
+            flash("Event successfully added")
+
+
     selectedYear=''
     selectedMonth=''
     selectedDay=''
     selectedPeriod=''
+    selectedDate = datetime.now().strftime("%Y-%m-%d")
+    currDate = datetime.now().strftime("%Y-%m-%d")
+
     if "year" in session:
         selectedYear = session["year"]
         selectedMonth = session["month"]
         selectedDay = session["day"]
         selectedPeriod = session["period"]
+        selectedDate = f"{selectedYear}-{int(selectedMonth):02d}-{int(selectedDay):02d}"
     if 'usertype' in session:
         if session['usertype'] == "admin" or session['usertype'] == "employee":
-            return render_template("create_event.html", selectedYear=selectedYear, selectedMonth=selectedMonth,
-                                   selectedDay=selectedDay, selectedPeriod=selectedPeriod, usertype=session["usertype"])
+            return render_template("create_event.html", selectedDate=selectedDate, selectedPeriod=selectedPeriod,
+                currDate=currDate, usertype=session["usertype"])
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
 
