@@ -148,6 +148,15 @@ p {
     background-color: #6f3333;
 }
 
+#image{
+    border: none;
+    border-radius: 25px;
+    border-style: solid;
+    border-width: 0.32rem;
+    border-color: #00474fd0;
+    margin-bottom: 10px;
+}
+
 
 
 /* Most code from https://www.codingnepalweb.com/dynamic-calendar-html-css-javascript/ */

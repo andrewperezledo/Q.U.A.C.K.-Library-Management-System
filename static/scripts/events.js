@@ -119,9 +119,13 @@ const renderEventInfo = (period) => {
     let EvTag = "";
     var i = period-1;
     if ("approved" in events[i] && events[i]["approved"] == true) {
+        var img = '';
+        if ("splash" in events[i] && events[i]["splash"] != false) {
+            img = `<img id="image" src="${events[i]["splash"]}"  height="210px;" width="570px;">`
+        }
         EvTag += `
         <h2>${events[i]["title"]}</h2>
-        <h2>Image w/ border here :)</h2>
+        ${img}
         <!-- https://stackoverflow.com/questions/14096292/how-to-have-two-headings-on-the-same-line-in-html -->
         <div style="clear: both;">
             <h4 style="float: left;">${events[i]["time"]}</h4>

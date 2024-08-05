@@ -415,9 +415,9 @@ def event_create():
         contact = request.form.get("contact")
         splash = request.form.get("splash")
         user = request.form.get("user")
-        approval = True if request.form.get("approval") else False
+        approved = True if request.form.get("approved") else False
 
-        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approval)
+        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approved)
         if status == "Time Slot Taken":
             flash("Time slot already pending approval", "error")
         elif status == "fail":
