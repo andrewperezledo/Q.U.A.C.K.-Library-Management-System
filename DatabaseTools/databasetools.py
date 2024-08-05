@@ -92,6 +92,14 @@ def bookCheckout(isbn, username):
         books.append(data)
         updatePost("Userdata", "Users", "_id", username, "books", books)
 
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
+
+
     return "Book checked out"
 
 
@@ -125,6 +133,13 @@ def movieCheckout(id_number, username):
         movies = user["movies"]
         movies.append(data)
         updatePost("Userdata", "Users", "_id", username, "movies", movies)
+
+    if len(user["history"]) == 0:
+        updatePost("Userdata", "Users", "_id", username, "history", [data["title"]])
+    else:
+        history = user["history"]
+        history.append(data["title"])
+        updatePost("Userdata", "Users", "_id", username, "history", history)
 
     return "Movie checked out"
 
@@ -390,7 +405,8 @@ def userCreation(username, password, usertype):
     for character in username:
         if character in banned_characters:
             return "Please enter valid username or password."
-    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": []}
+    post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": [],
+            "movies" : [], "reservations" : [], "history" : []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
         return "Matching Username"
@@ -437,6 +453,16 @@ def getAllBooks():
     for result in results:
         books.append(result)
     return books
+
+
+def getAllMovies():
+    database = cluster['Inventory']
+    coll = database['Movies']
+    movies = []
+    results = coll.find({})
+    for result in results:
+        movies.append(result)
+    return movies
 
 
 def bookSearch(title):
@@ -549,3 +575,13 @@ def checkUserOverdue(username):
         if movie["due_date"] < present:
             overdue_items.append(movie)
     return overdue_items
+
+# Griffins changes he sent in discord
+def admin_create_user(username, password, usertype):
+    return userCreation(username, password, usertype)
+
+def admin_delete_user(username):
+    database = cluster['Userdata']
+    coll = database['Users']
+    result = coll.delete_one({"_id": username})
+    return result.deleted_count > 0

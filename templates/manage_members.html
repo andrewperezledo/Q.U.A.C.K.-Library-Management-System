@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}QUACK Manage Members{% endblock %}
+{% block content %}
+
+<div class="manage-container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+                {% for msg in messages %}
+                    <p>{{msg}}</p>
+                {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h2>Manage Members</h2>
+
+    <div class="action-buttons">
+        <button onclick="showForm('addMemberForm')">Add Member</button>
+        <button onclick="showForm('deleteMemberForm')">Delete Member</button>
+    </div>
+
+    <div id="addMemberForm" style="display: none;">
+        <h3>Add New Member</h3>
+        <form action="{{ url_for('manage_members') }}" method="post">
+            <input type="hidden" name="action" value="add">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Add Member</button>
+        </form>
+    </div>
+
+    <div id="deleteMemberForm" style="display: none;">
+        <h3>Delete Member</h3>
+        <form action="{{ url_for('manage_members') }}" method="post">
+            <input type="hidden" name="action" value="delete">
+            <input type="text" name="username" placeholder="Username" required>
+            <button type="submit">Delete Member</button>
+        </form>
+    </div>
+
+    <div class="member-list">
+        <h3>Members</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td>{{ member.username }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function showForm(formId) {
+    document.getElementById('addMemberForm').style.display = 'none';
+    document.getElementById('deleteMemberForm').style.display = 'none';
+    document.getElementById(formId).style.display = 'block';
+}
+</script>
+
+{% endblock %}

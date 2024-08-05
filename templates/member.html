@@ -53,7 +53,7 @@
     </section>
     <section class="welcome-section">
         <h2>Your inventory!</h2>
-        {% if booklength != 0 or movielength != 0 or waitlistlength != 0 %}
+        {% if booklength != 0 or movielength != 0 or num_res != 0 %}
             {% if booklength != 0 %}
                 <h5>Books</h5>
                 {% for i in range(0,booklength) %}
