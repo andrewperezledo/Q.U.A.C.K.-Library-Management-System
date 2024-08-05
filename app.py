@@ -13,7 +13,6 @@ from DatabaseTools.databasekeys import session_secret_key
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
-
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
     username = request.args.get('username')
@@ -463,11 +462,9 @@ def update_user_role():
 
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
-    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 
-# year=<year>&month=<month>&day=<day>&period=<period>
 @app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -475,16 +472,19 @@ def eventspecific(year=None, month=None, day=None, period=None):
     selectedDay = request.args.get("day", type=int)
     selectedPeriod = request.args.get("period", type=int)
 
-    # If period out of bounds (not 1-7), then redirect?
-    # How????
-    # if (selectedPeriod is not None):
-    #     if (selectedPeriod < 1):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=1))
-    #     elif (selectedPeriod > 7):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
+    try:
+        selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+        currDate = datetime(selectedYear, selectedMonth, selectedDay)
+        if selectedPeriod < 1 or selectedPeriod > 7:
+            raise Exception("Period out of bounds")
+    except:
+        return render_template("not_found.html")
 
-    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
-    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+    # Easy passing of dates for create event
+    session["year"] = selectedYear
+    session["month"] = selectedMonth
+    session["day"] = selectedDay
+    session["period"] = selectedPeriod
 
     usertype = ""
     if 'usertype' in session:
@@ -511,22 +511,6 @@ def get_events_by_day():
     return events
 
 
-# Returns the type of user in dict format
-# @app.route('/get-user-info', methods=["POST"])
-# def get_user_info():
-#     user_info = {}
-#     if request.method == "POST":
-#         if 'usertype' in session:
-#             if session['usertype'] == 'admin':
-#                 user_info = {"user_type": "admin"}
-#             elif session['usertype'] == 'employee':
-#                 user_info = {"user_type": "employee"}
-#             else:
-#                 user_info = {"user_type": "member"}
-#         else:
-#             user_info = {"user_type": "unauthenticated"}
-#     return user_info
-
 @app.route('/event-rsvp/', methods=['GET'])
 def event_rsvp(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -545,11 +529,43 @@ def event_rsvp(year=None, month=None, day=None, period=None):
         url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
 
 
-@app.route('/events/create/')
+@app.route('/events/create/', methods=['GET','POST'])
 def event_create():
+    if request.method == 'POST':
+        date = request.form.get("date")
+        period = request.form.get("period")
+        title = request.form.get("title")
+        desc = request.form.get("desc")
+        contact = request.form.get("contact")
+        splash = request.form.get("splash")
+        user = request.form.get("user")
+        approved = True if request.form.get("approved") else False
+
+        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approved)
+        if status == "Time Slot Taken":
+            flash("Time slot already pending approval", "error")
+        elif status == "fail":
+            flash("Something when wrong, try again later", "error")
+        else:
+            flash("Event successfully added")
+
+    selectedYear=''
+    selectedMonth=''
+    selectedDay=''
+    selectedPeriod=''
+    selectedDate = datetime.now().strftime("%Y-%m-%d")
+    currDate = datetime.now().strftime("%Y-%m-%d")
+
+    if "year" in session:
+        selectedYear = session["year"]
+        selectedMonth = session["month"]
+        selectedDay = session["day"]
+        selectedPeriod = session["period"]
+        selectedDate = f"{selectedYear}-{int(selectedMonth):02d}-{int(selectedDay):02d}"
     if 'usertype' in session:
         if session['usertype'] == "admin" or session['usertype'] == "employee":
-            return render_template("create_event.html")
+            return render_template("create_event.html", selectedDate=selectedDate, selectedPeriod=selectedPeriod,
+                currDate=currDate, usertype=session["usertype"])
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
 

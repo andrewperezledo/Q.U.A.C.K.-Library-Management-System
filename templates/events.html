@@ -86,7 +86,7 @@ QUACK Events
                 <h4 style="text-align: center;">If not waiting on approval, create event here:</h4>
                 <!-- Needs: event creation menu -->
                 <!-- For assigned user, subcribe them to event and incriment rsvp by one -->
-                <a href="{{ url_for('event_create') }}"><button class="_button create_event"> Create Event </button></a>
+                <a href='{{ url_for("event_create") }}'><button class="_button create_event"> Create Event </button></a>
             {% else %}
                 <h4 style="text-align: center;">Please contact front desk or call 123-456-7890 to see about reserving an event.</h4>
             {% endif %}
