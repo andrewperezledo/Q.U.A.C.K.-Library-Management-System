@@ -572,7 +572,7 @@ def event_create():
 
 @app.route('/events/manage/', methods=['GET', 'POST'])
 def event_manage():
-    if 'usertype' not in session or session['usertype'] == "member":
+    if 'usertype' not in session or session['usertype'] != "admin":
         flash("Must be library staff member to manage events", "error")
         return redirect(url_for('login'))
 
