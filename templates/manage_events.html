@@ -37,9 +37,7 @@ padding: 10px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 5px;
-    /* width: 200px; */
     text-align: center;
-    /* Makeshift for proper center */
 }
 .edit{
     background-color: #3498db;
@@ -117,7 +115,6 @@ padding: 10px;
                     <td>{{ events[i]["user"] }}</td>
 
                     <td>
-                        <!-- <a href="edit/"><input type="button" name="option" value="yomama"></a> -->
                         <form action="edit/" method="POST">
                             <input type="hidden" name="edit" value="{{ events[i]['_id'] }}">
                             <button class="_button edit" type="submit">Edit</button>
