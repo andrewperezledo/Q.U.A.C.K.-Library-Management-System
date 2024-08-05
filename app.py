@@ -462,25 +462,15 @@ def update_user_role():
 
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
-    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 
-# year=<year>&month=<month>&day=<day>&period=<period>
 @app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
     selectedMonth = request.args.get("month", type=int)
     selectedDay = request.args.get("day", type=int)
     selectedPeriod = request.args.get("period", type=int)
-
-    # If period out of bounds (not 1-7), then redirect?
-    # How????
-    # if (selectedPeriod is not None):
-    #     if (selectedPeriod < 1):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=1))
-    #     elif (selectedPeriod > 7):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
 
     try:
         selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
@@ -521,22 +511,6 @@ def get_events_by_day():
     return events
 
 
-# Returns the type of user in dict format
-# @app.route('/get-user-info', methods=["POST"])
-# def get_user_info():
-#     user_info = {}
-#     if request.method == "POST":
-#         if 'usertype' in session:
-#             if session['usertype'] == 'admin':
-#                 user_info = {"user_type": "admin"}
-#             elif session['usertype'] == 'employee':
-#                 user_info = {"user_type": "employee"}
-#             else:
-#                 user_info = {"user_type": "member"}
-#         else:
-#             user_info = {"user_type": "unauthenticated"}
-#     return user_info
-
 @app.route('/event-rsvp/', methods=['GET'])
 def event_rsvp(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -574,7 +548,6 @@ def event_create():
             flash("Something when wrong, try again later", "error")
         else:
             flash("Event successfully added")
-
 
     selectedYear=''
     selectedMonth=''
