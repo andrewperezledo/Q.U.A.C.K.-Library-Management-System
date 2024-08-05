@@ -4,6 +4,7 @@
     align-items: center;
     min-height: calc(40vh - 40px);
     padding: 0px;
+    margin-bottom: 15px;
 }
 .admin-dashboard {
     padding: 40px 20px;
@@ -16,7 +17,7 @@
 }
 .welcome-message {
     text-align: center;
-    margin-bottom: 65px;
+    margin-bottom: 25px;
 }
 .welcome-message h2 {
     color: #2c3e50;
@@ -31,7 +32,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
     height: 50%;
 }
 .admin-button {
