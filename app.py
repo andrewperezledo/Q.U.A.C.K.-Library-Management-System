@@ -79,22 +79,6 @@ def login():
     return render_template('login.html')
 
 
-# @app.route('/home-user', methods=('GET', "POST"))
-# def home_user():
-#     username = request.args.get('username')
-#     if 'username' in session:
-#         usertype = session['usertype']
-#         username = session['username']
-#         if usertype == 'admin':
-#             return render_template('admin.html', username=username)
-#         elif usertype == 'employee':
-#             return render_template('employee.html', username=username)
-#         else:  # member
-#             return render_template('member.html', username=username)
-#     else:
-#         return render_template('homepage.html')
-
-
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
 
 # In here somewhere, change it so that members get routed to "reservation_page"
