@@ -13,7 +13,6 @@ from DatabaseTools.databasekeys import session_secret_key
 app = Flask(__name__)
 app.secret_key = session_secret_key
 
-
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
     username = request.args.get('username')
@@ -80,22 +79,6 @@ def login():
     return render_template('login.html')
 
 
-# @app.route('/home-user', methods=('GET', "POST"))
-# def home_user():
-#     username = request.args.get('username')
-#     if 'username' in session:
-#         usertype = session['usertype']
-#         username = session['username']
-#         if usertype == 'admin':
-#             return render_template('admin.html', username=username)
-#         elif usertype == 'employee':
-#             return render_template('employee.html', username=username)
-#         else:  # member
-#             return render_template('member.html', username=username)
-#     else:
-#         return render_template('homepage.html')
-
-
 # IN CONSTRUCTION, CATALOG CHECKOUT BUTTON TO CHECKOUT PAGE FOR SPECIFIC BOOK
 
 # In here somewhere, change it so that members get routed to "reservation_page"
@@ -112,7 +95,7 @@ def catalog():
             return redirect(url_for('catalog'))
         if parameter != "new_items":
             flash(f"You searched for {medium} with {parameter}s like '{search_text}'.", 'info')
-            searched_items = generalSearch(parameter, search_text, medium)
+            searched_items = generalSearch("Inventory", medium, parameter, search_text)
 
             if len(searched_items) == 0:
                 flash("Your search did not match any items.", "info")
@@ -463,11 +446,9 @@ def update_user_role():
 
 @app.route("/events/", methods=['GET'])
 def events(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, period=1):
-    # eventCreation("2024-7-15" + "-2", "Birthday day 2!", "Very long description. Did you know that in the year 2024 AD, the was a piece that was hidden away. This piece, coincidentally, was singular. There was a pirate that tried to find this piece with the great passion. Yes. This is the story of the one piece.", "123-456-7890")
     return redirect(url_for("eventspecific", year=year, month=month, day=day, period=period))
 
 
-# year=<year>&month=<month>&day=<day>&period=<period>
 @app.route("/events/e=", methods=['GET'])
 def eventspecific(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -475,16 +456,19 @@ def eventspecific(year=None, month=None, day=None, period=None):
     selectedDay = request.args.get("day", type=int)
     selectedPeriod = request.args.get("period", type=int)
 
-    # If period out of bounds (not 1-7), then redirect?
-    # How????
-    # if (selectedPeriod is not None):
-    #     if (selectedPeriod < 1):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=1))
-    #     elif (selectedPeriod > 7):
-    #         redirect(url_for("eventspecific", year=year, month=month, day=day, period=8))
+    try:
+        selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
+        currDate = datetime(selectedYear, selectedMonth, selectedDay)
+        if selectedPeriod < 1 or selectedPeriod > 7:
+            raise Exception("Period out of bounds")
+    except:
+        return render_template("not_found.html")
 
-    selectedEventDate = {"year": selectedYear, "month": selectedMonth, "day": selectedDay, "period": selectedPeriod}
-    currDate = datetime(selectedYear, selectedMonth, selectedDay)
+    # Easy passing of dates for create event
+    session["year"] = selectedYear
+    session["month"] = selectedMonth
+    session["day"] = selectedDay
+    session["period"] = selectedPeriod
 
     usertype = ""
     if 'usertype' in session:
@@ -511,22 +495,6 @@ def get_events_by_day():
     return events
 
 
-# Returns the type of user in dict format
-# @app.route('/get-user-info', methods=["POST"])
-# def get_user_info():
-#     user_info = {}
-#     if request.method == "POST":
-#         if 'usertype' in session:
-#             if session['usertype'] == 'admin':
-#                 user_info = {"user_type": "admin"}
-#             elif session['usertype'] == 'employee':
-#                 user_info = {"user_type": "employee"}
-#             else:
-#                 user_info = {"user_type": "member"}
-#         else:
-#             user_info = {"user_type": "unauthenticated"}
-#     return user_info
-
 @app.route('/event-rsvp/', methods=['GET'])
 def event_rsvp(year=None, month=None, day=None, period=None):
     selectedYear = request.args.get("year", type=int)
@@ -545,16 +513,117 @@ def event_rsvp(year=None, month=None, day=None, period=None):
         url_for("eventspecific", year=selectedYear, month=selectedMonth, day=selectedDay, period=selectedPeriod))
 
 
-@app.route('/events/create/')
+@app.route('/events/create/', methods=['GET','POST'])
 def event_create():
+    if request.method == 'POST':
+        date = request.form.get("date")
+        period = request.form.get("period")
+        title = request.form.get("title")
+        desc = request.form.get("desc")
+        contact = request.form.get("contact")
+        splash = request.form.get("splash")
+        user = request.form.get("user")
+        approved = True if request.form.get("approved") else False
+
+        status = eventCreation(date, period, title, desc, contact, splash, user, 0, approved)
+        if status == "Time Slot Taken":
+            flash("Time slot already pending approval", "error")
+        elif status == "fail":
+            flash("Something when wrong, try again later", "error")
+        else:
+            flash("Event successfully added")
+
+    selectedYear=''
+    selectedMonth=''
+    selectedDay=''
+    selectedPeriod=''
+    selectedDate = datetime.now().strftime("%Y-%m-%d")
+    currDate = datetime.now().strftime("%Y-%m-%d")
+
+    if "year" in session:
+        selectedYear = session["year"]
+        selectedMonth = session["month"]
+        selectedDay = session["day"]
+        selectedPeriod = session["period"]
+        selectedDate = f"{selectedYear}-{int(selectedMonth):02d}-{int(selectedDay):02d}"
     if 'usertype' in session:
         if session['usertype'] == "admin" or session['usertype'] == "employee":
-            return render_template("create_event.html")
+            return render_template("create_event.html", selectedDate=selectedDate, selectedPeriod=selectedPeriod,
+                currDate=currDate, usertype=session["usertype"])
     flash("Must be library staff member to create events", "error")
     return redirect(url_for('login'))
 
 
+@app.route('/events/manage/', methods=['GET', 'POST'])
+def event_manage():
+    if 'usertype' not in session or session['usertype'] != "admin":
+        flash("Must be library staff member to manage events", "error")
+        return redirect(url_for('login'))
+
+    events = []
+    events.extend(findManyPost("Events", "Events", "approved", False))
+    events.extend(findManyPost("Events", "Events", "approved", True))
+
+    return render_template("manage_events.html", events=events, num_events = len(events))
+
+
+
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+@app.route('/events/manage/edit/', methods=['GET', 'POST'])
+def event_edit():
+    if request.method == 'POST':
+        if request.form.get("edit"):
+            # For the purpose of passing in date of event selected
+            date = request.form.get("edit").split('-')
+
+            session["year"] = int(date[0])
+            session["month"] = int(date[1])
+            session["day"] = int(date[2])
+            session["period"] = int(date[3])
+            session["event"] = f"{session["year"]}-{session["month"]}-{session["day"]}-{session["period"]}"
+
+            selectedDate = f"{session["year"]}-{session["month"]:02d}-{session["day"]:02d}"
+            currDate = datetime.now().strftime("%Y-%m-%d")
+
+
+            return render_template("edit_events.html", event=findPost("Events", "Events", "_id", f"{request.form.get("edit")}"),
+                                   selectedDate=selectedDate, selectedPeriod=session["period"], currDate=currDate)
+        else:
+            if request.form.get("date"):
+                date = request.form.get("date")
+                date = date.split('-')
+
+                if findPost("Events", "Events", "_id", f"{int(date[0])}-{int(date[1])}-{int(date[2])}-{request.form.get("period")}"):
+                    flash("Time slot already occupied", "error")
+                    redirect(url_for("event_manage"))
+                else:
+                    new_id = f"{int(date[0])}-{int(date[1])}-{int(date[2])}-{request.form.get("period")}"
+                    changePostid("Events", "Events", session["event"], new_id)
+                    updatePost("Events", "Events", "_id", new_id, "time",
+                            time_slots[request.form.get("period", type=int) - 1])
+            else:
+                # To sustain boolean approved status
+                new_val = request.form.get("value")
+                if new_val == "true":
+                    new_val = True
+                elif new_val == "false":
+                    new_val == False
+
+                updatePost("Events", "Events", "_id", session["event"], f"{request.form.get("key")}", new_val)
+
+    flash("Event successfully updated")
+    return redirect(url_for("event_manage"))
+
+
+@app.route('/events/manage/delete/', methods=['GET', 'POST'])
+def event_delete():
+    if request.method == 'POST':
+        deletePost("Events", "Events", "_id", f"{request.form.get("delete")}")
+    return redirect(url_for("event_manage"))
+
+
 @app.errorhandler(404)
+@app.errorhandler(405)
 def not_found(e):
     return render_template("not_found.html")
 

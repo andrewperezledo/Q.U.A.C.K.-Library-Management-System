@@ -381,12 +381,28 @@ def updatePost(db, collection, search_parameter, search_value, new_parameter, ne
         print("Post updated.")
     except:
         print("Update failed.")
-
-
 # Example:
 # updatePost("Inventory", "Books", "title", "Harry Potter and the Sorcerer's Stone", "available", True)
 # updatePost("Userdata", "Users", "_id", "jimmylynch", "inventory", [])
 # updatePost("Inventory","Books","title","Harry Potter and the Sorcerer's Stone","genre","Magic")
+
+
+# Transfers old post to new post, but _id changes
+def changePostid(db, collection, old_id, new_id):
+    try:
+        post = findPost(db, collection, "_id", old_id)
+        if post:
+            new_post = post
+            new_post["_id"] = new_id
+            deletePost(db, collection, "_id", old_id)
+            addPost(db, collection, new_post)
+            return True
+        else:
+            print("No post to migrate")
+            return False
+    except:
+        print("Transfer failed.")
+        return False
 
 
 # username is the username, must be unique
@@ -475,14 +491,14 @@ def bookSearch(title):
 
 # This is the same as book search, except you can fill choose what category to search
 # and value is the search key you are looking for
-def generalSearch(category, value, type):
-    database = cluster['Inventory']
+def generalSearch(clust, type, category, value):
+    database = cluster[clust]
     coll = database[type]
-    books = []
+    items = []
     results = coll.find({category: {"$regex": value}})
     for result in results:
-        books.append(result)
-    return books
+        items.append(result)
+    return items
 
 
 def getAllUsers():
@@ -504,11 +520,12 @@ time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30
 
 
 # Remove status? Perhaps check time and change status only when event is loaded in?
-# When is yyyy-mm-dd-pp, where pp is a period 01-10.
-def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
-    period = time_slots[int(when[len(when) - 1]) - 1]
-    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc,
-            "time": period, "contact": contact, "attendees": attendees}
+
+# When is yyyy-mm-dd-pp, where pp is a period 1-7.
+def eventCreation(when, period, title, desc, contact='', splash='', assigned_user='admin', attendees=0, approved=False):
+    when2 = f"{int(when[0:4])}-{int(when[5:7])}-{int(when[8:])}-{period}"
+    prd = time_slots[int(period)-1]
+    post = {"_id": when2, "approved": approved, "user": assigned_user, "title": title, "desc": desc, "time": prd, "contact": contact, "splash": splash, "attendees": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"

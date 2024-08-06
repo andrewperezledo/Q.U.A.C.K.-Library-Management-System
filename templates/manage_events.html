@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}
+QUACK Event Management
+{% endblock %}
+
+{% block styles %}
+<style>
+th:tr{ 
+text-align: center;
+} 
+tr:nth-of-type(2n){ 
+border: 2px solid black; 
+background-color:rgb(240, 248, 255); 
+font-weight: 600;
+} 
+td{ 
+background-color:rgba(240, 248, 255, 0.596);
+padding: 8px 8px; 
+border: 2px solid black;
+text-align: center;
+font-weight: 600;
+}
+#title {
+background-color: rgba(255, 255, 255, 0.8);
+border-radius: 15px;
+text-align: center;
+padding: 10px;
+}
+._button{
+    padding: 10px 10px;
+    width: 90%;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 550;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 5px;
+    text-align: center;
+}
+.edit{
+    background-color: #3498db;
+    color: white;
+}
+.delete{
+    background-color: #e74c3c;
+    color: white;
+}
+.edit:hover{
+    background-color: #2980b9;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+.delete:hover{
+    background-color: #c0392b;
+}
+</style>
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css')}}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div style="clear: none; width: 100%;">
+    <h2 id="title" style="float: left; margin-left: 20px;">Events</h2>
+    <a style="float: right;" href="/events/create/"><button class="_button edit">Create Event</button></a>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for cat, msg in messages %}
+            {% if cat == "error" %}
+                <h4 style="text-align: center; color:rgba(255, 0, 0, 0.59)">{{msg}}</h4>
+            {% else %}
+                <h4 style="text-align: center; color:rgb(0, 108, 132)">{{msg}}</h4>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% if events %}
+    <table class="events_table" style="margin-left: 20px; align-self: center; margin-bottom: 20px; margin-right: 20px;"> 
+        <th>
+            <tr style="color: black; font-weight: 1000;">
+                <td style="min-width: 180px;">Date<br>(yyyy-mm-dd-pp)</td>
+                <td>Approved</td>
+                <td style="max-width: 100px;">Attendees</td>
+                <td>Time</td>
+                <td>Title</td>
+                <td>Description</td>
+                <td>Contact</td>
+                <td style="max-width: 200px; word-wrap: break-word;">Splash Link</td>
+                <td>Assigned User</td>
+                <td>Managerial Options</td>
+            </tr>
+        </th>
+
+        {% for i in range(num_events) %}
+            <div class = events>
+                <tr>
+                    <td style="min-width: 180px;">{{ events[i]["_id"] }}</td>
+                    {% if events[i]["approved"] == True %}
+                        <td style="color: #001326;">{{ events[i]["approved"] }}</td>
+                    {% else %}
+                        <td style="color: #9f0000;">{{ events[i]["approved"] }}</td>
+                    {% endif %}
+                    <td style="max-width: 100px;">{{ events[i]["attendees"] }}</td>
+                    <td>{{ events[i]["time"] }}</td>
+                    <td>{{ events[i]["title"] }}</td>
+                    <td>{{ events[i]["desc"] }}</td>
+                    <td>{{ events[i]["contact"] }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word;">{{ events[i]["splash"] }}</td>
+                    <td>{{ events[i]["user"] }}</td>
+
+                    <td>
+                        <form action="edit/" method="POST">
+                            <input type="hidden" name="edit" value="{{ events[i]['_id'] }}">
+                            <button class="_button edit" type="submit">Edit</button>
+                        </form>
+                        <form action="delete/" method="POST">
+                            <input type="hidden" name="delete" value="{{ events[i]['_id'] }}">
+                            <button class="_button delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </div>
+        {% endfor %}
+    </table>   
+{% else %}
+    <section class="welcome-section">
+        <h2 style="text-align: center;">No Events to Manage!</h2>
+    </section>
+{% endif %}
+{% endblock %}
