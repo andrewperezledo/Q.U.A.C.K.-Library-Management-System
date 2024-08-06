@@ -42,7 +42,7 @@ db = cluster["Events"]
 collection = db["Events"]
 
 collection.insert_one({'_id': "YYYY-MM-DD-Period", 'approved': False,
-                       "user": "user who created the event", "status": "upcoming",
+                       "user": "user who created the event",
                        "title": "title", "desc": "desc",
                        "time": "Start time - End time", "contact": "123-456-7890",
                        "attendees": "7"})

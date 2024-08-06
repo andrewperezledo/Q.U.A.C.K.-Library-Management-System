@@ -75,7 +75,7 @@ def bookCheckout(isbn, username):
         return "User has overdue items."
 
     # Sets book to unavailable in inventory system and assigns due date (3 days from day of checkout)
-    updatePost("Inventory", "Books", "_id", isbn, "copies_available", data["copies_available"]-1)
+    updatePost("Inventory", "Books", "_id", isbn, "copies_available", data["copies_available"] - 1)
     if data["copies_available"] == 1:
         updatePost("Inventory", "Books", "_id", isbn, "availability", False)
     present = datetime.today()
@@ -99,7 +99,6 @@ def bookCheckout(isbn, username):
         history.append(data["title"])
         updatePost("Userdata", "Users", "_id", username, "history", history)
 
-
     return "Book checked out"
 
 
@@ -117,7 +116,7 @@ def movieCheckout(id_number, username):
     if len(overdue_status) != 0:
         return "User has overdue items."
     # Sets movie to unavailable in inventory system and assigns due date (3 days from day of checkout)
-    updatePost("Inventory", "Movies", "_id", id_number, "copies_available", data["copies_available"]-1)
+    updatePost("Inventory", "Movies", "_id", id_number, "copies_available", data["copies_available"] - 1)
     if data["copies_available"] == 1:
         updatePost("Inventory", "Movies", "_id", id_number, "availability", False)
     present = datetime.today()
@@ -162,7 +161,7 @@ def bookReturn(isbn, username):
 
     updatePost("Inventory", "Books", "_id", isbn, "availability", True)
     updatePost("Inventory", "Books", "_id", isbn, "due_date", "none")
-    updatePost("Inventory", "Books", "_id", isbn, "copies_available", data["copies_available"]+1)
+    updatePost("Inventory", "Books", "_id", isbn, "copies_available", data["copies_available"] + 1)
 
     # Remove book from user profile
     user = userSearch(username)
@@ -210,7 +209,7 @@ def checkBookAvailability(isbn):
     return data["availability"]
 
 
-def joinItemWaitlist(isbn,username):
+def joinItemWaitlist(isbn, username):
     if isbn is int:
         data = findPost("Inventory", "Movies", "_id", isbn)
         newqueue = data["reservation_queue"]
@@ -219,7 +218,7 @@ def joinItemWaitlist(isbn,username):
         user_data = userSearch(username)
         updatedwaitlist = user_data["waitlist_items"]
         updatedwaitlist.append(data)
-        updatePost("Userdata","Users","_id",username,"waitlist_items",updatedwaitlist)
+        updatePost("Userdata", "Users", "_id", username, "waitlist_items", updatedwaitlist)
     else:
         data = findPost("Inventory", "Books", "_id", isbn)
         newqueue = data["reservation_queue"]
@@ -228,33 +227,33 @@ def joinItemWaitlist(isbn,username):
         user_data = userSearch(username)
         updatedwaitlist = user_data["waitlist_items"]
         updatedwaitlist.append(data)
-        updatePost("Userdata","Users","_id",username,"waitlist_items",updatedwaitlist)
+        updatePost("Userdata", "Users", "_id", username, "waitlist_items", updatedwaitlist)
 
 
 def reserveItem(isbn, username):
     if int(isbn) < 100:
-        data = findPost("Inventory","Movies","_id", int(isbn))
+        data = findPost("Inventory", "Movies", "_id", int(isbn))
         if len(data["reserved_by"]) == int(data["copies"]):
             return "No copies available"
         newreserve = data["reserved_by"]
         newreserve.append(username)
-        updatePost("Inventory","Movies","_id", int(isbn), "reserved_by", newreserve)
+        updatePost("Inventory", "Movies", "_id", int(isbn), "reserved_by", newreserve)
         user_data = userSearch(username)
         new_reserves = user_data["reservations"]
         new_reserves.append(data)
         updatePost("Userdata", "Users", "_id", username, "reservations", new_reserves)
 
     else:
-        data = findPost("Inventory","Books","_id", isbn)
+        data = findPost("Inventory", "Books", "_id", isbn)
         if len(data["reserved_by"]) == int(data["copies"]):
             return "No copies available"
         newreserve_book = data["reserved_by"]
         newreserve_book.append(username)
-        updatePost("Inventory","Books","_id", isbn, "reserved_by", newreserve_book)
+        updatePost("Inventory", "Books", "_id", isbn, "reserved_by", newreserve_book)
         user_data = userSearch(username)
         new_reserves = user_data["reservations"]
         new_reserves.append(data)
-        updatePost("Userdata","Users","_id",username,"reservations",new_reserves)
+        updatePost("Userdata", "Users", "_id", username, "reservations", new_reserves)
 
 
 # Example:
@@ -367,7 +366,6 @@ def updateManyPost(db, collection, search_parameter, search_value, new_parameter
 # updateManyPost("Inventory","Books","genre", "Fantasy","available", True)
 
 
-
 # Try except borrowed:
 # https://stackoverflow.com/questions/44838280/how-to-ignore-duplicate-key-errors-safely-using-insert-many
 
@@ -406,7 +404,7 @@ def userCreation(username, password, usertype):
         if character in banned_characters:
             return "Please enter valid username or password."
     post = {"_id": username, "password": passwordEncrypt(password), "usertype": usertype, "books": [],
-            "movies" : [], "reservations" : [], "history" : []}
+            "movies": [], "reservations": [], "history": []}
     add = addPost("Userdata", "Users", post)
     if add == "Duplicate Key":
         return "Matching Username"
@@ -501,18 +499,22 @@ def updateUserRole(username, new_role):
     return result.modified_count > 0
 
 
-time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm", "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+time_slots = ["9:00am - 10:00am", "10:30am - 11:30am", "12:00pm - 1:00pm", "1:30pm - 2:30pm", "3:00pm - 4:00pm",
+              "4:30pm - 5:30pm", "6:00pm - 7:00pm"]
+
 
 # Remove status? Perhaps check time and change status only when event is loaded in?
 # When is yyyy-mm-dd-pp, where pp is a period 01-10.
 def eventCreation(when, title, desc, contact='', assigned_user='admin', attendees=0, approved=False, status="upcoming"):
-    period = time_slots[int(when[len(when)-1])-1]
-    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc, "time": period, "contact": contact, "attendees": attendees}
+    period = time_slots[int(when[len(when) - 1]) - 1]
+    post = {"_id": when, "approved": approved, "user": assigned_user, "status": status, "title": title, "desc": desc,
+            "time": period, "contact": contact, "attendees": attendees}
     add = addPost("Events", "Events", post)
     if add == "Duplicate Key":
         return "Time Slot Taken"
     else:
         return add
+
 
 # Naming syntax leads to other getEventsByPeriod, or getEventsByMonth, etc.
 # Date in format yyyy-mm-dd
@@ -524,7 +526,7 @@ def getEventsByDate(day):
         if post and post != "fail" and post["approved"]:
             events.append(post)
         else:
-            events.append({"_id": f"{i}", "title": f"{time_slots[i-1]} Available", "time":f"{time_slots[i-1]}"})
+            events.append({"_id": f"{i}", "title": f"{time_slots[i - 1]} Available", "time": f"{time_slots[i - 1]}"})
 
     return events
 
@@ -540,7 +542,8 @@ def incrimentRSVP(data):
     post = findPost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}")
     if post and post != "fail" and post["approved"]:
         attendees = post["attendees"] + 1
-        updatePost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}", "attendees", attendees)
+        updatePost("Events", "Events", "_id", f"{data['year']}-{data['month']}-{data['day']}-{data['period']}",
+                   "attendees", attendees)
         return True
     return False
 
@@ -558,7 +561,7 @@ def ISBNSearch(isbn, collection):
 # Returns given username's books
 def getUserInventory(username):
     user = findPost("Userdata", "Users", "_id", username)
-    return [user["books"],user["movies"]]
+    return [user["books"], user["movies"]]
 
 
 def checkUserOverdue(username):
@@ -575,9 +578,11 @@ def checkUserOverdue(username):
             overdue_items.append(movie)
     return overdue_items
 
+
 # Griffins changes he sent in discord
 def admin_create_user(username, password, usertype):
     return userCreation(username, password, usertype)
+
 
 def admin_delete_user(username):
     database = cluster['Userdata']
